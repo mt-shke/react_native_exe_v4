@@ -51,6 +51,11 @@ export const signIn = async (
     if (error.code === 'auth/network-request-failed') {
       console.log('Connection error');
     }
+    if (error.code === 'auth/invalid-email') {
+      console.log(
+        'Invalid email: badly formatted. This error happened when auto signIn',
+      );
+    }
     return null;
   }
 };

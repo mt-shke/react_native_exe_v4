@@ -19,17 +19,7 @@ const UpdateProfileScreen = () => {
       resizeMode="cover"
       style={styles.bg}>
       <ScrollView>
-        <View style={styles.container}>
-          <View style={styles.container}>
-            <TouchableOpacity
-              style={styles.btnSettings}
-              onPress={() => {
-                navigation.openDrawer();
-              }}>
-              <Ionicons name="settings-sharp" size={24} />
-            </TouchableOpacity>
-          </View>
-        </View>
+        <View style={styles.container}></View>
       </ScrollView>
     </ImageBackground>
   );

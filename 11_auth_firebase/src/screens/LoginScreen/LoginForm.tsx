@@ -1,7 +1,14 @@
 import {yupResolver} from '@hookform/resolvers/yup';
 import React, {useEffect, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
-import {View, StyleSheet, Text, TouchableOpacity, Keyboard} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  Keyboard,
+  ActivityIndicator,
+} from 'react-native';
 import {credentialsSchema} from '../../schema/yup';
 import {ICredentials} from '../../ts/interfaces';
 import {useNavigation} from '@react-navigation/native';
@@ -12,7 +19,7 @@ import {gStyles} from '../../globals/globalStyles';
 import {colors} from '../../globals/colors';
 import Modal from '../../components/UI/Modal';
 import {TLoginScreenNavigationProp} from '../../ts/types/navigation';
-import {signOut} from '../../firebase';
+import {signIn, signOut} from '../../firebase';
 import {storage} from '../../../App';
 
 const LoginForm: React.FC = () => {
@@ -33,18 +40,10 @@ const LoginForm: React.FC = () => {
   );
   const [isFetching, setIsFetching] = useState(false);
   const [validationModal, setValidationModal] = useState(false);
+  const [credentialsChecked, setCredentialsChecked] = useState(false);
 
   const jsonUser = storage.getString('user');
   const credentials = jsonUser ? JSON.parse(jsonUser) : null;
-
-  useEffect(() => {
-    if (credentials) {
-      auth().signInWithEmailAndPassword(
-        credentials.email,
-        credentials.password,
-      );
-    }
-  });
 
   const onSubmit = async (data: ICredentials) => {
     try {
@@ -113,6 +112,15 @@ const LoginForm: React.FC = () => {
     ...gStyles.button,
     opacity: isFetching ? 0.5 : 1,
   };
+
+  if (credentials && !credentialsChecked) {
+    signIn({email: credentials.email, password: credentials.password});
+    setTimeout(() => {
+      setCredentialsChecked(true);
+    }, 3000);
+
+    return <ActivityIndicator size={'large'} />;
+  }
 
   return (
     <>

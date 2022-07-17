@@ -8,6 +8,7 @@ import {
   ImageBackground,
   ScrollView,
 } from 'react-native';
+import TextStylised from '../../components/UI/TextStylised';
 import {jobs, jobsImg} from '../../data';
 import {signOut} from '../../firebase';
 import {colors, fonts} from '../../globals';
@@ -20,7 +21,9 @@ import {THomeScreenNavigationProp} from '../../ts/types/navigation';
 //   'HomeScreen'
 // >;
 
-const HomeScreen = () => {
+const HomeScreen = props => {
+  console.log(props);
+
   const {
     state: {user},
   } = useContext(UserContext);
@@ -40,16 +43,15 @@ const HomeScreen = () => {
       <ScrollView>
         <View style={styles.container}>
           <View style={styles.containtText}>
-            <Text style={styles.text}>Welcome {user?.email}</Text>
-            <Text
-              style={
-                styles.text
-              }>{`Hello ${username}, I am the Grand Master of the ${job}s, I will teach you how to achieve your goal and become one of us.`}</Text>
+            <TextStylised content={`Welcome ${user?.email}`} />
+            <TextStylised
+              content={`Hello ${username}, I am the Grand Master of the ${job}s, I will teach you how to achieve your goal and become one of us.`}
+            />
           </View>
           <View style={styles.containtText}>
-            <Text style={styles.text}>
-              {'Your first mission is to change your password'}
-            </Text>
+            <TextStylised
+              content={'Your first mission is to change your password'}
+            />
           </View>
 
           {/* <TouchableOpacity
@@ -61,11 +63,9 @@ const HomeScreen = () => {
       </TouchableOpacity> */}
 
           <TouchableOpacity
-            style={[styles.btnMission]}
+            style={styles.btnMission}
             onPress={() => navigation.replace('SettingsDrawer')}>
-            <View>
-              <Text style={styles.btnText}>Go to first mission</Text>
-            </View>
+            <TextStylised content={'Go to first mission'} />
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -81,48 +81,21 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   container: {
-    marginTop: 160,
+    marginTop: 140,
   },
   containtText: {
     padding: 20,
     backgroundColor: colors.black,
     width: '90%',
-    marginLeft: 10,
+    marginLeft: 6,
     marginTop: 40,
-  },
-  text: {
-    fontFamily: fonts.medium,
-    fontSize: 18,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    color: colors.whiteBlue,
-  },
-  signBtn: {
-    backgroundColor: 'lightgreen',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    alignSelf: 'center',
-    marginVertical: 20,
-  },
-  display: {
-    backgroundColor: 'orange',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    marginTop: 20,
-    alignSelf: 'center',
   },
   btnMission: {
     backgroundColor: colors.darkGrey,
     marginTop: 20,
     alignSelf: 'flex-end',
     marginRight: 20,
-    padding: 10,
     borderRadius: 6,
-  },
-  btnText: {
-    fontFamily: fonts.medium,
-    fontSize: 18,
-    color: colors.whiteBlue,
   },
 });
 

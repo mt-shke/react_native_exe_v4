@@ -9,7 +9,9 @@ import {
 import {signOut} from '../../firebase';
 import NewUserForm from './NewUserForm';
 
-const NewUserScreen = () => {
+const NewUserScreen = props => {
+  console.log(props);
+
   return (
     <View style={styles.container}>
       <ImageBackground

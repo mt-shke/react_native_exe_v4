@@ -2,7 +2,7 @@ import {yupResolver} from '@hookform/resolvers/yup';
 import React, {useEffect, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {View, StyleSheet, Text, TouchableOpacity, Keyboard} from 'react-native';
-import {credentialsSchema} from '../../schema/yup';
+import {changePasswordSchema, credentialsSchema} from '../../schema/yup';
 import {ICredentials} from '../../ts/interfaces';
 import {useNavigation} from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
@@ -15,17 +15,24 @@ import {TLoginScreenNavigationProp} from '../../ts/types/navigation';
 import {signOut} from '../../firebase';
 import {storage} from '../../../App';
 
+interface IChangePassword {
+  email: string;
+  oldPassword: string;
+  newPassword: string;
+  newPasswordConfirmation: string;
+}
+
 const ChangePasswordForm: React.FC = () => {
   const {
     control,
     handleSubmit,
     clearErrors,
     formState: {errors},
-  } = useForm<ICredentials>({
-    resolver: yupResolver(credentialsSchema),
+  } = useForm<IChangePassword>({
+    resolver: yupResolver(changePasswordSchema),
   });
 
-  const navigation = useNavigation<TLoginScreenNavigationProp>();
+  // const navigation = useNavigation<TLoginScreenNavigationProp>();
 
   const [emailAsyncError, setEmailAsyncError] = useState<null | string>(null);
   const [passwordAsyncError, setPasswordAsyncError] = useState<null | string>(
@@ -48,20 +55,15 @@ const ChangePasswordForm: React.FC = () => {
         data.email,
         data.password,
       );
-      if (response && !response.user.emailVerified) {
-        await response.user.sendEmailVerification();
-        signOut();
-        setValidationModal(true);
-        return setTimeout(() => {
-          setValidationModal(false);
-          setIsFetching(false);
-        }, 6000);
-      }
-
-      storage.set(
-        'user',
-        JSON.stringify({email: data.email, password: data.password}),
-      );
+      // if (response && !response.user.emailVerified) {
+      //   await response.user.sendEmailVerification();
+      //   signOut();
+      //   setValidationModal(true);
+      //   return setTimeout(() => {
+      //     setValidationModal(false);
+      //     setIsFetching(false);
+      //   }, 6000);
+      // }
 
       setIsFetching(false);
       return;
@@ -90,8 +92,8 @@ const ChangePasswordForm: React.FC = () => {
     ? emailAsyncError
     : '';
 
-  const passwordError = errors.password?.message
-    ? errors.password?.message
+  const passwordError = errors.oldPassword?.message
+    ? errors.oldPassword?.message
     : passwordAsyncError
     ? passwordAsyncError
     : '';
@@ -126,13 +128,43 @@ const ChangePasswordForm: React.FC = () => {
             rules={{
               maxLength: 40,
             }}
-            name={'password'}
+            name={'oldPassword'}
             render={({field}) => (
               <CustomInput
-                label="Password"
+                label="Old password"
                 field={field}
                 type="password"
                 error={passwordError}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            rules={{
+              maxLength: 40,
+            }}
+            name={'newPassword'}
+            render={({field}) => (
+              <CustomInput
+                label="New password"
+                field={field}
+                type="password"
+                error={errors.newPassword?.message}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            rules={{
+              maxLength: 40,
+            }}
+            name={'newPasswordConfirmation'}
+            render={({field}) => (
+              <CustomInput
+                label="New password confirmation"
+                field={field}
+                type="password"
+                error={errors.newPasswordConfirmation?.message}
               />
             )}
           />
@@ -142,10 +174,10 @@ const ChangePasswordForm: React.FC = () => {
           disabled={isFetching ? true : false}
           style={btnSubmitStyle}
           onPress={handleSubmit(onSubmit)}>
-          <Text style={styles.btnText}>Login</Text>
+          <Text style={styles.btnText}>Change password</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={[styles.signBtn, gStyles.button]}
           onPress={() => navigation.replace('SignUpScreen')}>
           <Text style={styles.btnText}>Sign up a new account</Text>
@@ -155,11 +187,11 @@ const ChangePasswordForm: React.FC = () => {
           style={styles.btnForgot}
           onPress={() => navigation.replace('LostPasswordScreen')}>
           <Text style={styles.btnTextForgot}>Lost password</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       {Boolean(validationModal) && (
         <Modal
-          text="Please check your email and activate your account before login"
+          text="Password has been successfully updated"
           style={styles.modal}
         />
       )}
@@ -171,10 +203,11 @@ export default ChangePasswordForm;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    marginTop: 100,
+    paddingHorizontal: 40,
   },
   containerForm: {
-    width: formWidth,
+    width: '100%',
     alignSelf: 'center',
   },
   btnText: {

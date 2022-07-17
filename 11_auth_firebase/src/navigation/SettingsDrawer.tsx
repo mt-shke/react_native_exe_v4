@@ -5,14 +5,12 @@ import {
   DrawerItemList,
 } from '@react-navigation/drawer';
 import SettingsScreen from '../screens/SettingsScreen';
-import {View, StyleSheet, Image, ImageBackground, Text} from 'react-native';
+import {View, StyleSheet, Image, ImageBackground} from 'react-native';
 import {jobsImg} from '../data';
 import UpdateProfileScreen from '../screens/UpdateProfileScreen';
 import ChangePasswordScreen from '../screens/ChangePasswordScreen';
 import {colors} from '../globals';
 import DeleteAccountScreen from '../screens/DeleteAccountScreen';
-import {useNavigation} from '@react-navigation/native';
-import {TSettingsDrawerNavigationProp} from '../ts/types/navigation';
 
 export type TSettingsDrawerParamList = {
   SettingsScreen: undefined;
@@ -24,8 +22,6 @@ export type TSettingsDrawerParamList = {
 const Drawer = createDrawerNavigator<TSettingsDrawerParamList>();
 
 const SettingsDrawer = () => {
-  const navigation = useNavigation<TSettingsDrawerNavigationProp>();
-
   return (
     <Drawer.Navigator
       initialRouteName="SettingsScreen"
@@ -111,6 +107,8 @@ const styles = StyleSheet.create({
 
 const navigatorOptions = {
   headerShown: false,
+  // headerLeft: false,
+  // headerTransparent: true,
   drawerActiveTintColor: colors.whiteBlue,
   drawerInactiveTintColor: colors.darkGrey,
 };
