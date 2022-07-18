@@ -21,6 +21,15 @@
 // Exercice 5 :
 // Faire les différents écrans permettant d’afficher, de créer, de modifier et de supprimer les mots de passe enregistrés.
 // Pour l’affichage, les mots de passes devront être caché par défaut.
+
+// Exercice 6 :
+// En utilisant https://rnmmkv.vercel.app/#/ , Faire en sorte que quand un utilisateur se connecte, cela enregistre ses identifiants de connexion pour qu’il puisse se loguer automatiquement les prochaines fois.
+// A la déconnexion, supprimer ses identifiants de connexion.
+
+// Exercice 7:
+// Permettre à l'utilisateur d'utiliser la biométrie pour pouvoir s'authentifier.
+// Exercice 8 :
+// Permettre à l'utilisateur de pouvoir enregistrer des photos dans l'application via Firebase Storage.
 ```
 
 <h2>Firebase</h2>
@@ -360,15 +369,6 @@ useEffect missing dependencies
 
 </details>
 
-<details>
-<summary>todo</summary>
-
-```js
-// change input font
-// onPress choose Class
-```
-
-</details>
 <details>
 <summary>signInWithEmailLink</summary>
 

@@ -1,35 +1,38 @@
 import {yupResolver} from '@hookform/resolvers/yup';
 import React, {useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
-import {View, StyleSheet, Text, TouchableOpacity, Keyboard} from 'react-native';
-import {changePasswordSchema} from '../../schema/yup';
+import {
+  View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  Keyboard,
+  ActivityIndicator,
+} from 'react-native';
+import {credentialsSchema} from '../../schema/yup';
+import {ICredentials} from '../../ts/interfaces';
 import {useNavigation} from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
 import CustomInput from '../../components/CustomInput';
-import {fonts} from '../../globals';
+import {fonts, formWidth} from '../../globals';
 import {gStyles} from '../../globals/globalStyles';
 import {colors} from '../../globals/colors';
 import Modal from '../../components/UI/Modal';
-import {TChangePasswordScreenNavigationProp} from '../../ts/types/navigation';
+import {TLoginScreenNavigationProp} from '../../ts/types/navigation';
+import {signIn, signOut} from '../../firebase';
+import {storage} from '../../../App';
 
-interface IChangePassword {
-  email: string;
-  oldPassword: string;
-  newPassword: string;
-  newPasswordConfirmation: string;
-}
-
-const ChangePasswordForm: React.FC = () => {
+const DeleteAccountForm: React.FC = () => {
   const {
     control,
     handleSubmit,
     clearErrors,
     formState: {errors},
-  } = useForm<IChangePassword>({
-    resolver: yupResolver(changePasswordSchema),
+  } = useForm<ICredentials>({
+    resolver: yupResolver(credentialsSchema),
   });
 
-  const navigation = useNavigation<TChangePasswordScreenNavigationProp>();
+  const navigation = useNavigation<TLoginScreenNavigationProp>();
 
   const [emailAsyncError, setEmailAsyncError] = useState<null | string>(null);
   const [passwordAsyncError, setPasswordAsyncError] = useState<null | string>(
@@ -37,8 +40,12 @@ const ChangePasswordForm: React.FC = () => {
   );
   const [isFetching, setIsFetching] = useState(false);
   const [validationModal, setValidationModal] = useState(false);
+  const [credentialsChecked, setCredentialsChecked] = useState(false);
 
-  const onSubmit = async (data: IChangePassword) => {
+  const jsonUser = storage.getString('user');
+  const credentials = jsonUser ? JSON.parse(jsonUser) : null;
+
+  const onSubmit = async (data: ICredentials) => {
     try {
       if (isFetching) {
         return;
@@ -50,19 +57,23 @@ const ChangePasswordForm: React.FC = () => {
       setIsFetching(true);
       const response = await auth().signInWithEmailAndPassword(
         data.email,
-        data.oldPassword,
+        data.password,
+      );
+      if (response && !response.user.emailVerified) {
+        await response.user.sendEmailVerification();
+        signOut();
+        setValidationModal(true);
+        return setTimeout(() => {
+          setValidationModal(false);
+          setIsFetching(false);
+        }, 6000);
+      }
+
+      storage.set(
+        'user',
+        JSON.stringify({email: data.email, password: data.password}),
       );
 
-      if (!response) {
-        setIsFetching(false);
-        return;
-      }
-      await auth().currentUser?.updatePassword(data.newPasswordConfirmation);
-
-      setValidationModal(true);
-      setTimeout(() => {
-        navigation.navigate('SettingsScreen');
-      }, 2000);
       setIsFetching(false);
       return;
     } catch (error: any) {
@@ -90,8 +101,8 @@ const ChangePasswordForm: React.FC = () => {
     ? emailAsyncError
     : '';
 
-  const passwordError = errors.oldPassword?.message
-    ? errors.oldPassword?.message
+  const passwordError = errors.password?.message
+    ? errors.password?.message
     : passwordAsyncError
     ? passwordAsyncError
     : '';
@@ -101,6 +112,15 @@ const ChangePasswordForm: React.FC = () => {
     ...gStyles.button,
     opacity: isFetching ? 0.5 : 1,
   };
+
+  if (credentials && !credentialsChecked) {
+    signIn({email: credentials.email, password: credentials.password});
+    setTimeout(() => {
+      setCredentialsChecked(true);
+    }, 3000);
+
+    return <ActivityIndicator size={'large'} />;
+  }
 
   return (
     <>
@@ -126,43 +146,13 @@ const ChangePasswordForm: React.FC = () => {
             rules={{
               maxLength: 40,
             }}
-            name={'oldPassword'}
+            name={'password'}
             render={({field}) => (
               <CustomInput
-                label="Old password"
+                label="Password"
                 field={field}
                 type="password"
                 error={passwordError}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            rules={{
-              maxLength: 40,
-            }}
-            name={'newPassword'}
-            render={({field}) => (
-              <CustomInput
-                label="New password"
-                field={field}
-                type="password"
-                error={errors.newPassword?.message}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            rules={{
-              maxLength: 40,
-            }}
-            name={'newPasswordConfirmation'}
-            render={({field}) => (
-              <CustomInput
-                label="New password confirmation"
-                field={field}
-                type="password"
-                error={errors.newPasswordConfirmation?.message}
               />
             )}
           />
@@ -172,10 +162,10 @@ const ChangePasswordForm: React.FC = () => {
           disabled={isFetching ? true : false}
           style={btnSubmitStyle}
           onPress={handleSubmit(onSubmit)}>
-          <Text style={styles.btnText}>Change password</Text>
+          <Text style={styles.btnText}>Login</Text>
         </TouchableOpacity>
 
-        {/* <TouchableOpacity
+        <TouchableOpacity
           style={[styles.signBtn, gStyles.button]}
           onPress={() => navigation.replace('SignUpScreen')}>
           <Text style={styles.btnText}>Sign up a new account</Text>
@@ -185,11 +175,11 @@ const ChangePasswordForm: React.FC = () => {
           style={styles.btnForgot}
           onPress={() => navigation.replace('LostPasswordScreen')}>
           <Text style={styles.btnTextForgot}>Lost password</Text>
-        </TouchableOpacity> */}
+        </TouchableOpacity>
       </View>
       {Boolean(validationModal) && (
         <Modal
-          text="Password has been successfully updated"
+          text="Please check your email and activate your account before login"
           style={styles.modal}
         />
       )}
@@ -197,15 +187,14 @@ const ChangePasswordForm: React.FC = () => {
   );
 };
 
-export default ChangePasswordForm;
+export default DeleteAccountForm;
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 100,
-    paddingHorizontal: 40,
+    flex: 1,
   },
   containerForm: {
-    width: '100%',
+    width: formWidth,
     alignSelf: 'center',
   },
   btnText: {

@@ -1,19 +1,8 @@
-import {useNavigation} from '@react-navigation/native';
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  ImageBackground,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
-import {TChangePasswordScreenNavigationProp} from '../../ts/types/navigation';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import {StyleSheet, ImageBackground, ScrollView} from 'react-native';
 import ChangePasswordForm from './ChangePasswordForm';
 
 const ChangePasswordScreen = () => {
-  const navigation = useNavigation<TChangePasswordScreenNavigationProp>();
-
   return (
     <ImageBackground
       source={require('../../../assets/img/bg-settings.png')}

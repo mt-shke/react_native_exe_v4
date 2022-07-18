@@ -1,17 +1,8 @@
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  ImageBackground,
-  TouchableOpacity,
-  Text,
-} from 'react-native';
-import {signOut} from '../../firebase';
+import {View, StyleSheet, ImageBackground} from 'react-native';
 import NewUserForm from './NewUserForm';
 
-const NewUserScreen = props => {
-  console.log(props);
-
+const NewUserScreen = (props: any) => {
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -19,9 +10,6 @@ const NewUserScreen = props => {
         style={styles.bg}
         resizeMode="cover">
         <NewUserForm />
-        <TouchableOpacity style={styles.btnSign} onPress={() => signOut()}>
-          <Text>Sign out</Text>
-        </TouchableOpacity>
       </ImageBackground>
     </View>
   );
@@ -35,9 +23,5 @@ const styles = StyleSheet.create({
   },
   bg: {
     flex: 1,
-  },
-  btnSign: {
-    padding: 20,
-    backgroundColor: 'green',
   },
 });

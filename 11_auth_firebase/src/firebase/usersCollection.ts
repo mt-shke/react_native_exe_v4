@@ -21,6 +21,28 @@ export const setUserToFirestore = async (userUid: string, email: string) => {
     return null;
   }
 };
+export const setUserFirestoreCredentials = async (
+  userUid: string,
+  email: string,
+) => {
+  try {
+    const newUserInFirestore = await firestore()
+      .collection('Users')
+      .doc(userUid)
+      .collection('credentials')
+      .add({
+        email: email,
+        // todo need to find a way to crypt the password
+        password: '',
+        name: 'Auth_Firebase',
+        type: 'app',
+      });
+    return newUserInFirestore;
+  } catch (error: any) {
+    console.log('setUserFirestoreCredentials error:' + error);
+    return null;
+  }
+};
 
 export const updateUserFirestore = async (uid: string, data: any) => {
   try {

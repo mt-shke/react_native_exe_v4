@@ -8,14 +8,15 @@ import {getUserData, signOut} from '../firebase';
 
 const MainNavigation: React.FC = () => {
   const [initializing, setInitializing] = useState(true);
+
   const {state, dispatch} = useContext(UserContext);
 
   function onAuthStateChanged(fetchedUser: any) {
-    // console.log(
-    //   new Date(Date.now()),
-    //   'In AuthStateChange FetchedUser is:',
-    //   fetchedUser,
-    // );
+    console.log(
+      new Date(Date.now()),
+      'In AuthStateChange FetchedUser is:',
+      fetchedUser,
+    );
 
     if (!fetchedUser) {
       if (state.user) {
@@ -25,7 +26,10 @@ const MainNavigation: React.FC = () => {
 
     if (fetchedUser) {
       if (!fetchedUser.emailVerified) {
-        signOut();
+        setTimeout(() => {
+          signOut();
+        }, 2000);
+        return;
       }
       updateUserState(fetchedUser.uid);
       return;

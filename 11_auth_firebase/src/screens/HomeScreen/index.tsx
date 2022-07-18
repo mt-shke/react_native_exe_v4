@@ -2,7 +2,6 @@ import {useNavigation} from '@react-navigation/native';
 import React, {useContext, useEffect} from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
   ImageBackground,
@@ -10,20 +9,12 @@ import {
 } from 'react-native';
 import TextStylised from '../../components/UI/TextStylised';
 import {jobs, jobsImg} from '../../data';
-import {signOut} from '../../firebase';
-import {colors, fonts} from '../../globals';
+import {colors} from '../../globals';
 import {UserContext} from '../../state/UserContext';
 import {THomeScreenNavigationProp} from '../../ts/types/navigation';
-// import firestore from '@react-native-firebase/firestore';
 
-// type THomeScreenProps = NativeStackScreenProps<
-//   TAuthenticatedStackParamsList,
-//   'HomeScreen'
-// >;
-
-const HomeScreen = props => {
-  console.log(props);
-
+const HomeScreen = (props: any) => {
+  // todo find props screen type
   const {
     state: {user},
   } = useContext(UserContext);

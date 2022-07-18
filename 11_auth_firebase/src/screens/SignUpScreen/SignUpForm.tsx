@@ -12,7 +12,7 @@ import {colors} from '../../globals/colors';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import ValidationModal from './ValidationModal';
 import {TSignUpScreenNavigationProp} from '../../ts/types/navigation';
-import {setUserToFirestore} from '../../firebase';
+import {setUserFirestoreCredentials, setUserToFirestore} from '../../firebase';
 
 interface ISignUpForm {
   email: string;
@@ -56,8 +56,10 @@ const SignUpForm: React.FC = () => {
 
       if (!createResponse) {
         console.log('no createResponse');
+        return;
       }
       await setUserToFirestore(createResponse.user.uid, data.email);
+      await setUserFirestoreCredentials(createResponse.user.uid, data.email);
       await createResponse.user.sendEmailVerification();
       // await sendSignInEmailLink(data.email);
       setValidationModal(true);

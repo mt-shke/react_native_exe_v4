@@ -1,4 +1,3 @@
-import {useNavigation} from '@react-navigation/native';
 import React from 'react';
 import {
   View,
@@ -6,17 +5,14 @@ import {
   ImageBackground,
   ScrollView,
   Text,
-  TouchableOpacity,
 } from 'react-native';
-import {TDeleteAccountScreenNavigationProp} from '../ts/types/navigation';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+// import {useNavigation} from '@react-navigation/native';
+// import {TDeleteAccountScreenNavigationProp} from '../../ts/types/navigation';
 
 const DeleteAccountScreen = () => {
-  const navigation = useNavigation<TDeleteAccountScreenNavigationProp>();
-
   return (
     <ImageBackground
-      source={require('../../assets/img/bg-settings.png')}
+      source={require('../../../assets/img/bg-settings.png')}
       resizeMode="cover"
       style={styles.bg}>
       <ScrollView>
