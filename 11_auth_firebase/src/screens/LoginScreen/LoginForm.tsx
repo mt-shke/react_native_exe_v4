@@ -21,8 +21,75 @@ import Modal from '../../components/UI/Modal';
 import {TLoginScreenNavigationProp} from '../../ts/types/navigation';
 import {signIn, signOut} from '../../firebase';
 import {storage} from '../../../App';
+import ReactNativeBiometrics from 'react-native-biometrics';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import * as Keychain from 'react-native-keychain';
 
 const LoginForm: React.FC = () => {
+  const navigation = useNavigation<TLoginScreenNavigationProp>();
+  const [emailAsyncError, setEmailAsyncError] = useState<null | string>(null);
+  const [passwordAsyncError, setPasswordAsyncError] = useState<null | string>(
+    null,
+  );
+  const [isFetching, setIsFetching] = useState(false);
+  const [credentialsChecked, setCredentialsChecked] = useState(false);
+  const [validationModal, setValidationModal] = useState(false);
+  const [touchModal, setTouchModal] = useState(false);
+
+  // Local stored user
+  const jsonUser = storage.getString('user');
+  const credentials = jsonUser ? JSON.parse(jsonUser) : null;
+
+  // Biometrics
+  const rnBiometrics = new ReactNativeBiometrics({
+    allowDeviceCredentials: true,
+  });
+
+  const touchHandler = async () => {
+    try {
+      let {success, error} = await rnBiometrics.simplePrompt({
+        promptMessage: 'Sign in with Touch ID',
+        cancelButtonText: 'Close',
+      });
+      if (!success) {
+        console.log('Login user');
+        return;
+      }
+
+      await loginWithLocalKeychainCredentials();
+      return;
+    } catch (error: any) {
+      return;
+    }
+  };
+
+  // Login with keyChain Credentials
+  const loginWithLocalKeychainCredentials = async () => {
+    try {
+      const localKeychainCredentials = await Keychain.getGenericPassword(
+        credentials,
+      );
+      if (!localKeychainCredentials) {
+        throw new Error('Keychain password not found');
+      }
+      const response = await signIn({
+        email: localKeychainCredentials.username,
+        password: localKeychainCredentials.password,
+      });
+      if (!response) {
+        throw new Error('Invalid credentials while login with Touch');
+      }
+      return;
+    } catch (error) {
+      setTouchModal(true);
+      setTimeout(() => {
+        setTouchModal(false);
+      }, 3000);
+      return;
+    }
+  };
+
+  // Form
   const {
     control,
     handleSubmit,
@@ -31,19 +98,6 @@ const LoginForm: React.FC = () => {
   } = useForm<ICredentials>({
     resolver: yupResolver(credentialsSchema),
   });
-
-  const navigation = useNavigation<TLoginScreenNavigationProp>();
-
-  const [emailAsyncError, setEmailAsyncError] = useState<null | string>(null);
-  const [passwordAsyncError, setPasswordAsyncError] = useState<null | string>(
-    null,
-  );
-  const [isFetching, setIsFetching] = useState(false);
-  const [validationModal, setValidationModal] = useState(false);
-  const [credentialsChecked, setCredentialsChecked] = useState(false);
-
-  const jsonUser = storage.getString('user');
-  const credentials = jsonUser ? JSON.parse(jsonUser) : null;
 
   const onSubmit = async (data: ICredentials) => {
     try {
@@ -69,11 +123,16 @@ const LoginForm: React.FC = () => {
         }, 6000);
       }
 
-      storage.set(
-        'user',
-        JSON.stringify({email: data.email, password: data.password}),
+      const keyChainCredentials = await Keychain.setGenericPassword(
+        data.email,
+        data.password,
       );
-
+      if (!keyChainCredentials) {
+        console.log('Credentials has not been encrypted!');
+        setIsFetching(false);
+        return;
+      }
+      storage.set('user', JSON.stringify(keyChainCredentials));
       setIsFetching(false);
       return;
     } catch (error: any) {
@@ -114,10 +173,10 @@ const LoginForm: React.FC = () => {
   };
 
   if (credentials && !credentialsChecked) {
-    signIn({email: credentials.email, password: credentials.password});
+    loginWithLocalKeychainCredentials();
     setTimeout(() => {
       setCredentialsChecked(true);
-    }, 3000);
+    }, 5000);
 
     return <ActivityIndicator size={'large'} />;
   }
@@ -157,13 +216,22 @@ const LoginForm: React.FC = () => {
             )}
           />
         </View>
+        <View style={styles.containerBtnLogin}>
+          <TouchableOpacity
+            disabled={isFetching ? true : false}
+            style={btnSubmitStyle}
+            onPress={handleSubmit(onSubmit)}>
+            <Text style={styles.btnText}>Login</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            disabled={isFetching ? true : false}
+            style={styles.btnTouch}
+            onPress={() => touchHandler()}>
+            <Ionicons name="finger-print-sharp" size={20} />
 
-        <TouchableOpacity
-          disabled={isFetching ? true : false}
-          style={btnSubmitStyle}
-          onPress={handleSubmit(onSubmit)}>
-          <Text style={styles.btnText}>Login</Text>
-        </TouchableOpacity>
+            {/* <Text style={styles.btnText}>Touch Login</Text> */}
+          </TouchableOpacity>
+        </View>
 
         <TouchableOpacity
           style={[styles.signBtn, gStyles.button]}
@@ -179,7 +247,15 @@ const LoginForm: React.FC = () => {
       </View>
       {Boolean(validationModal) && (
         <Modal
-          text="Please check your email and activate your account before login"
+          text={
+            'Please check your email and activate your account before login'
+          }
+          style={styles.modal}
+        />
+      )}
+      {Boolean(touchModal) && (
+        <Modal
+          text={'Touch is unavailable, please login with email and password'}
           style={styles.modal}
         />
       )}
@@ -208,6 +284,23 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 
+  containerBtnLogin: {
+    position: 'relative',
+  },
+
+  btnTouch: {
+    position: 'absolute',
+    right: 20,
+    backgroundColor: colors.blue,
+    marginTop: 30,
+    alignSelf: 'center',
+    borderRadius: 12,
+    elevation: 10,
+    borderWidth: 0.5,
+    borderColor: colors.grey,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+  },
   signBtn: {
     backgroundColor: colors.lightGreen,
     alignSelf: 'center',

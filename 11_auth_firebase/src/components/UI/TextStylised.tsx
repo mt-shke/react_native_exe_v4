@@ -4,10 +4,14 @@ import {colors, fonts} from '../../globals';
 
 interface ITextStylised {
   content: string;
+  align?: 'center';
 }
 
-const TextStylised = ({content}: ITextStylised) => {
-  return <Text style={styles.text}>{`${content}`}</Text>;
+const TextStylised = ({content, align}: ITextStylised) => {
+  return (
+    <Text
+      style={{...styles.text, textAlign: align ?? 'left'}}>{`${content}`}</Text>
+  );
 };
 
 export default TextStylised;

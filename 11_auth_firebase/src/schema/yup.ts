@@ -61,10 +61,11 @@ export const changePasswordSchema = object().shape({
 });
 
 export const updateProfileSchema = object().shape({
-  firstname: string()
-    .required('Firstname is missing')
-    .min(1, 'Firstname is too small')
-    .max(40, 'Firstname is too long'),
+  username: string()
+    .trim()
+    .required('Username is missing')
+    .min(1, 'Username is too small')
+    .max(40, 'Username is too long'),
 });
 
 export const userProfileSchema = object().shape({

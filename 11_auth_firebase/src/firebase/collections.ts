@@ -40,10 +40,7 @@ export const deleteDocument = async (collectionId: string) => {
     const response = await firestore()
       .collection(collectionId)
       .doc(auth().currentUser?.uid)
-      .delete()
-      .then(() => {
-        console.log('User data deleted!');
-      });
+      .delete();
     return response;
   } catch (error) {
     console.log(error);

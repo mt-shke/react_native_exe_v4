@@ -89,3 +89,16 @@ export const getAllUsers = async () => {
 };
 
 export const getSpecificDoc = async () => {};
+
+export const deleteUserData = async (userUid: string) => {
+  try {
+    const response = await firestore()
+      .collection('Users')
+      .doc(userUid)
+      .delete();
+    return response;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};

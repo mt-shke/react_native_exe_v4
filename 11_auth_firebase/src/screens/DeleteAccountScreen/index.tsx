@@ -1,11 +1,6 @@
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  ImageBackground,
-  ScrollView,
-  Text,
-} from 'react-native';
+import {StyleSheet, ImageBackground, ScrollView} from 'react-native';
+import DeleteAccountForm from './DeleteAccountForm';
 // import {useNavigation} from '@react-navigation/native';
 // import {TDeleteAccountScreenNavigationProp} from '../../ts/types/navigation';
 
@@ -15,11 +10,14 @@ const DeleteAccountScreen = () => {
       source={require('../../../assets/img/bg-settings.png')}
       resizeMode="cover"
       style={styles.bg}>
-      <ScrollView>
-        <View style={styles.container}>
-          <Text>change password screen</Text>
-        </View>
-      </ScrollView>
+      <ImageBackground
+        source={require('../../../assets/img/bg-page-nobg.png')}
+        resizeMode="cover"
+        style={styles.bg}>
+        <ScrollView>
+          <DeleteAccountForm />
+        </ScrollView>
+      </ImageBackground>
     </ImageBackground>
   );
 };

@@ -7,10 +7,10 @@ import {
 import SettingsScreen from '../screens/SettingsScreen';
 import {View, StyleSheet, Image, ImageBackground} from 'react-native';
 import {jobsImg} from '../data';
-import UpdateProfileScreen from '../screens/UpdateProfileScreen';
 import ChangePasswordScreen from '../screens/ChangePasswordScreen';
 import {colors} from '../globals';
 import DeleteAccountScreen from '../screens/DeleteAccountScreen';
+import UpdateProfileScreen from '../screens/UpdateProfileScreen';
 
 export type TSettingsDrawerParamList = {
   SettingsScreen: undefined;

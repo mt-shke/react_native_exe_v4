@@ -1,26 +1,18 @@
 import {yupResolver} from '@hookform/resolvers/yup';
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
-import {
-  View,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  Keyboard,
-  ActivityIndicator,
-} from 'react-native';
+import {View, StyleSheet, Text, TouchableOpacity, Keyboard} from 'react-native';
 import {credentialsSchema} from '../../schema/yup';
 import {ICredentials} from '../../ts/interfaces';
-import {useNavigation} from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
 import CustomInput from '../../components/CustomInput';
-import {fonts, formWidth} from '../../globals';
+import {fonts} from '../../globals';
 import {gStyles} from '../../globals/globalStyles';
 import {colors} from '../../globals/colors';
 import Modal from '../../components/UI/Modal';
-import {TLoginScreenNavigationProp} from '../../ts/types/navigation';
-import {signIn, signOut} from '../../firebase';
-import {storage} from '../../../App';
+import {deleteAccount, deleteUserData} from '../../firebase';
+import {UserContext} from '../../state/UserContext';
+import TextStylised from '../../components/UI/TextStylised';
 
 const DeleteAccountForm: React.FC = () => {
   const {
@@ -31,19 +23,13 @@ const DeleteAccountForm: React.FC = () => {
   } = useForm<ICredentials>({
     resolver: yupResolver(credentialsSchema),
   });
-
-  const navigation = useNavigation<TLoginScreenNavigationProp>();
-
+  const {state, dispatch} = useContext(UserContext);
   const [emailAsyncError, setEmailAsyncError] = useState<null | string>(null);
   const [passwordAsyncError, setPasswordAsyncError] = useState<null | string>(
     null,
   );
   const [isFetching, setIsFetching] = useState(false);
-  const [validationModal, setValidationModal] = useState(false);
-  const [credentialsChecked, setCredentialsChecked] = useState(false);
-
-  const jsonUser = storage.getString('user');
-  const credentials = jsonUser ? JSON.parse(jsonUser) : null;
+  const [modal, setModal] = useState(false);
 
   const onSubmit = async (data: ICredentials) => {
     try {
@@ -59,22 +45,17 @@ const DeleteAccountForm: React.FC = () => {
         data.email,
         data.password,
       );
-      if (response && !response.user.emailVerified) {
-        await response.user.sendEmailVerification();
-        signOut();
-        setValidationModal(true);
-        return setTimeout(() => {
-          setValidationModal(false);
-          setIsFetching(false);
-        }, 6000);
+      if (!response) {
+        setIsFetching(false);
+        return;
       }
-
-      storage.set(
-        'user',
-        JSON.stringify({email: data.email, password: data.password}),
-      );
-
-      setIsFetching(false);
+      await deleteUserData(state.user!.uid);
+      setModal(true);
+      setTimeout(() => {
+        dispatch({type: 'LOGOUT_USER'});
+        deleteAccount();
+        setIsFetching(false);
+      }, 3000);
       return;
     } catch (error: any) {
       if (error.code === 'auth/user-not-found') {
@@ -113,19 +94,16 @@ const DeleteAccountForm: React.FC = () => {
     opacity: isFetching ? 0.5 : 1,
   };
 
-  if (credentials && !credentialsChecked) {
-    signIn({email: credentials.email, password: credentials.password});
-    setTimeout(() => {
-      setCredentialsChecked(true);
-    }, 3000);
-
-    return <ActivityIndicator size={'large'} />;
-  }
-
   return (
     <>
       <View style={styles.container}>
         <View style={styles.containerForm}>
+          <View style={styles.containerText}>
+            <TextStylised
+              align="center"
+              content="Enter your credentials to delete your account"
+            />
+          </View>
           <Controller
             control={control}
             rules={{
@@ -162,24 +140,12 @@ const DeleteAccountForm: React.FC = () => {
           disabled={isFetching ? true : false}
           style={btnSubmitStyle}
           onPress={handleSubmit(onSubmit)}>
-          <Text style={styles.btnText}>Login</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.signBtn, gStyles.button]}
-          onPress={() => navigation.replace('SignUpScreen')}>
-          <Text style={styles.btnText}>Sign up a new account</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.btnForgot}
-          onPress={() => navigation.replace('LostPasswordScreen')}>
-          <Text style={styles.btnTextForgot}>Lost password</Text>
+          <Text style={styles.btnText}>Delete account</Text>
         </TouchableOpacity>
       </View>
-      {Boolean(validationModal) && (
+      {Boolean(modal) && (
         <Modal
-          text="Please check your email and activate your account before login"
+          text="Your account has been successfully deleted. You will be disconnected in a moment."
           style={styles.modal}
         />
       )}
@@ -192,9 +158,17 @@ export default DeleteAccountForm;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingVertical: 100,
+    paddingHorizontal: 20,
   },
   containerForm: {
-    width: formWidth,
+    alignSelf: 'center',
+  },
+  containerText: {
+    backgroundColor: colors.darkGrey,
+    borderRadius: 6,
+    marginVertical: 20,
+    marginHorizontal: 6,
     alignSelf: 'center',
   },
   btnText: {
@@ -203,15 +177,9 @@ const styles = StyleSheet.create({
   },
 
   btnSubmit: {
-    backgroundColor: colors.blue,
+    backgroundColor: colors.orange,
     marginTop: 30,
     alignSelf: 'center',
-  },
-
-  signBtn: {
-    backgroundColor: colors.lightGreen,
-    alignSelf: 'center',
-    marginTop: 30,
   },
   modal: {
     width: '90%',
@@ -219,14 +187,7 @@ const styles = StyleSheet.create({
     top: 240,
     alignSelf: 'center',
   },
-  btnForgot: {
-    backgroundColor: colors.orange,
-    position: 'absolute',
-    padding: 4,
-    borderRadius: 4,
-    bottom: 10,
-    right: 10,
-  },
+
   btnTextForgot: {
     fontFamily: fonts.semiBold,
     fontSize: 14,
