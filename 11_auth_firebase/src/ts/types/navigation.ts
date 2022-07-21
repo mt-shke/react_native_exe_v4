@@ -1,5 +1,8 @@
 import {DrawerNavigationProp} from '@react-navigation/drawer';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {
+  NativeStackNavigationProp,
+  NativeStackScreenProps,
+} from '@react-navigation/native-stack';
 import {TAuthenticatedStackParamsList} from '../../navigation/AuthenticatedStack';
 import {TSettingsDrawerParamList} from '../../navigation/SettingsDrawer';
 import {TUnAuthenticatedStackParamsList} from '../../navigation/UnAuthenticatedStack';
@@ -29,7 +32,7 @@ export type TNewUserScreenNavigationProp = NativeStackNavigationProp<
   'NewUserScreen'
 >;
 
-export type THomeScreenNavigationProp = NativeStackNavigationProp<
+export type THomeScreenProps = NativeStackScreenProps<
   TAuthenticatedStackParamsList,
   'HomeScreen'
 >;

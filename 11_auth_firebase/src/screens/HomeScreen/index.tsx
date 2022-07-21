@@ -11,19 +11,16 @@ import TextStylised from '../../components/UI/TextStylised';
 import {jobs, jobsImg} from '../../data';
 import {colors} from '../../globals';
 import {UserContext} from '../../state/UserContext';
-import {THomeScreenNavigationProp} from '../../ts/types/navigation';
+import {THomeScreenProps} from '../../ts/types/navigation';
 
-const HomeScreen = (props: any) => {
+const HomeScreen = (props: THomeScreenProps) => {
   // todo find props screen type
   const {
     state: {user},
   } = useContext(UserContext);
-
   const {job, username} = user!.profile;
 
-  useEffect(() => {});
-
-  const navigation = useNavigation<THomeScreenNavigationProp>();
+  const {navigation} = props;
   const bgIndex = jobs.indexOf(user!.profile.job);
 
   return (
@@ -44,15 +41,6 @@ const HomeScreen = (props: any) => {
               content={'Your first mission is to change your password'}
             />
           </View>
-
-          {/* <TouchableOpacity
-        style={styles.btnDeleteAll}
-        onPress={() => deleteCollection('Users')}>
-        <View>
-          <Text>Delete all users</Text>
-        </View>
-      </TouchableOpacity> */}
-
           <TouchableOpacity
             style={styles.btnMission}
             onPress={() => navigation.replace('SettingsDrawer')}>

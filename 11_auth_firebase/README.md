@@ -450,3 +450,12 @@ import 'react-native-gesture-handler';
 ```js
 // npm start -- --reset-cache
 ```
+
+<details>
+<summary>React Native Image Picker</summary>
+
+```js
+// npm i react-native-image-picker
+```
+
+</details>

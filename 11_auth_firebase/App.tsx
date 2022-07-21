@@ -5,12 +5,6 @@ import 'react-native-gesture-handler';
 import {MMKV} from 'react-native-mmkv';
 import MainNavigation from './src/navigation/MainNavigation';
 
-// export const storage = new MMKV({
-//   id: `user-${userId}-storage`,
-//   path: `${USER_DIRECTORY}/storage`,
-//   encryptionKey: 'hunter2',
-// });
-
 export const storage = new MMKV();
 
 const App = () => {

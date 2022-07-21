@@ -9,7 +9,7 @@ import {
 import {signOutFromApp} from '../../firebase';
 import {UserContext} from '../../state/UserContext';
 import {useNavigation} from '@react-navigation/native';
-import {TSettingsScreenNavigationProp} from '../../ts/types/navigation';
+import {TSettingsDrawerNavigationProp} from '../../ts/types/navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {colors} from '../../globals';
 import TextStylised from '../../components/UI/TextStylised';
@@ -20,12 +20,9 @@ const SettingsScreen = () => {
     dispatch,
   } = useContext(UserContext);
 
-  const {username, job} = user!.profile;
+  // const {username, job} = user!.profile;
 
-  const [deleteAccountModal, setDeleteAccountModal] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const navigation = useNavigation<TSettingsScreenNavigationProp>();
+  const navigation = useNavigation<TSettingsDrawerNavigationProp>();
 
   useEffect(() => {
     // if (loggedAuth) {
@@ -66,6 +63,11 @@ const SettingsScreen = () => {
         </View>
       </ScrollView>
 
+      <TouchableOpacity
+        style={styles.btnGallery}
+        onPress={() => navigation.navigate('GalleryScreen')}>
+        <Ionicons name="images-sharp" size={24} />
+      </TouchableOpacity>
       <TouchableOpacity style={styles.btnLogout} onPress={() => logoutUser()}>
         <Ionicons name="md-log-out" size={24} />
       </TouchableOpacity>
@@ -90,6 +92,17 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     width: '90%',
     alignSelf: 'center',
+  },
+  btnGallery: {
+    backgroundColor: colors.whiteBlue,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+    elevation: 5,
+    margin: 20,
+    bottom: 0,
+    left: 0,
+    position: 'absolute',
   },
 
   btnLogout: {
