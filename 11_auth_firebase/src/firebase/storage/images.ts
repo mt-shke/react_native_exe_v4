@@ -6,20 +6,27 @@ import {
 } from 'react-native-image-picker';
 import storage from '@react-native-firebase/storage';
 
-export const sendLocalImgToStorage = async (userUid: string) => {
+export const retrieveLocalImg = async () => {
   try {
     const result = await launchImageLibrary(options);
-    if (result.didCancel) {
-      console.log('User did cancel action');
-      return;
-    }
     if (!result.assets) {
       throw new Error('No file found');
     }
-    const {fileName, uri} = result.assets[0];
-    const ref = storage().ref(`/assets/users/${userUid}/` + fileName);
-    const response = await ref.putFile(uri as string);
-    return response;
+    return result.assets[0];
+  } catch (error) {
+    console.log('retrieveLocalImg error: ' + error);
+    return error;
+  }
+};
+
+export const sendLocalImgToStorage = async (userUid: string, data: any) => {
+  try {
+    const ref = storage().ref(`/assets/users/${userUid}/` + data.fileName);
+    const response = await ref.putFile(data.uri as string);
+    if (!response) {
+      throw new Error('Could not upload image to Storage');
+    }
+    return ref;
   } catch (error: any) {
     console.log('Error happened while selecting image from library: ' + error);
     return error;
@@ -109,4 +116,15 @@ let options: ImageLibraryOptions = {
   //   path: 'images',
   // },
   // saveToPhotos: true,
+};
+
+export const deleteStorageImage = async (userUid, fileName) => {
+  try {
+    const ref = storage().ref(`/assets/users/${userUid}/` + fileName);
+    await ref.delete();
+    return;
+  } catch (error) {
+    console.log('deleteStorageImage error is: ' + error);
+    return;
+  }
 };

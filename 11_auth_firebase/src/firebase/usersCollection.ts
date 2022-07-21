@@ -21,6 +21,7 @@ export const setUserToFirestore = async (userUid: string, email: string) => {
     return null;
   }
 };
+
 export const setUserFirestoreCredentials = async (
   userUid: string,
   email: string,
@@ -32,7 +33,7 @@ export const setUserFirestoreCredentials = async (
       .collection('credentials')
       .add({
         email: email,
-        // todo need to find a way to crypt the password
+        // todo use keychain to crypt
         password: '',
         name: 'Auth_Firebase',
         type: 'app',

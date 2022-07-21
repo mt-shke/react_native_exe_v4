@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext} from 'react';
 import {
   View,
   StyleSheet,
@@ -15,27 +15,9 @@ import {colors} from '../../globals';
 import TextStylised from '../../components/UI/TextStylised';
 
 const SettingsScreen = () => {
-  const {
-    state: {user},
-    dispatch,
-  } = useContext(UserContext);
-
-  // const {username, job} = user!.profile;
+  const {dispatch} = useContext(UserContext);
 
   const navigation = useNavigation<TSettingsDrawerNavigationProp>();
-
-  useEffect(() => {
-    // if (loggedAuth) {
-    //   const updateUserInfo = async () => {
-    //     const userData = await getUserData(loggedAuth.uid as string);
-    //     if (userData) {
-    //       const fetchedUser = userData.data();
-    //       setProfileData(fetchedUser as IUserData);
-    //     }
-    //   };
-    //   updateUserInfo();
-    // }
-  }, []);
 
   const logoutUser = () => {
     dispatch({type: 'LOGOUT_USER'});

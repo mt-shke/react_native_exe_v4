@@ -3,7 +3,12 @@ import UnAuthenticatedStack from './UnAuthenticatedStack';
 import AuthenticatedStack from './AuthenticatedStack';
 import auth from '@react-native-firebase/auth';
 import {UserContext} from '../state/UserContext';
-import {ActivityIndicator} from 'react-native';
+import {
+  ActivityIndicator,
+  ImageBackground,
+  View,
+  StyleSheet,
+} from 'react-native';
 import {getUserData, signOut} from '../firebase';
 
 const MainNavigation: React.FC = () => {
@@ -12,11 +17,11 @@ const MainNavigation: React.FC = () => {
   const {state, dispatch} = useContext(UserContext);
 
   function onAuthStateChanged(fetchedUser: any) {
-    console.log(
-      new Date(Date.now()),
-      'In AuthStateChange FetchedUser is:',
-      fetchedUser,
-    );
+    // console.log(
+    //   new Date(Date.now()),
+    //   'In AuthStateChange FetchedUser is:',
+    //   fetchedUser,
+    // );
 
     if (!fetchedUser) {
       if (state.user) {
@@ -77,7 +82,15 @@ const MainNavigation: React.FC = () => {
 
   if (initializing) {
     signOut();
-    return <ActivityIndicator size={'large'} />;
+    return (
+      <ImageBackground
+        source={require('../../assets/img/bg-login.png')}
+        style={styles.bg}>
+        <View style={styles.container}>
+          <ActivityIndicator size={'large'} />
+        </View>
+      </ImageBackground>
+    );
   }
 
   if (!state.user) {
@@ -88,3 +101,13 @@ const MainNavigation: React.FC = () => {
 };
 
 export default MainNavigation;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: 94,
+  },
+  bg: {
+    flex: 1,
+  },
+});

@@ -16,3 +16,14 @@ export interface ICredentials {
 export interface IEmail {
   email: string;
 }
+
+export interface IGalleryImg {
+  title: string;
+  description?: string;
+  imgUrl: string;
+  fileName: string;
+}
+
+export interface IGalleryImgData {
+  data: IGalleryImg;
+}

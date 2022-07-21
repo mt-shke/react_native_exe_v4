@@ -27,7 +27,7 @@ export type TLostPasswordScreenNavigationProp = NativeStackNavigationProp<
 
 // AuthenticatedStack
 
-export type TNewUserScreenNavigationProp = NativeStackNavigationProp<
+export type TNewUserScreenScreenProps = NativeStackScreenProps<
   TAuthenticatedStackParamsList,
   'NewUserScreen'
 >;
@@ -40,6 +40,10 @@ export type THomeScreenProps = NativeStackScreenProps<
 export type TSettingsDrawerNavigationProp = NativeStackNavigationProp<
   TAuthenticatedStackParamsList,
   'SettingsDrawer'
+>;
+export type TGalleryScreenProps = NativeStackScreenProps<
+  TAuthenticatedStackParamsList,
+  'GalleryScreen'
 >;
 
 // SettingsDrawer

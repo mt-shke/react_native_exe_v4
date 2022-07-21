@@ -2,7 +2,7 @@ import React from 'react';
 import {View, StyleSheet, ImageBackground} from 'react-native';
 import NewUserForm from './NewUserForm';
 
-const NewUserScreen = (props: any) => {
+const NewUserScreen = () => {
   return (
     <View style={styles.container}>
       <ImageBackground

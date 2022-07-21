@@ -174,18 +174,6 @@ const ChangePasswordForm: React.FC = () => {
           onPress={handleSubmit(onSubmit)}>
           <Text style={styles.btnText}>Change password</Text>
         </TouchableOpacity>
-
-        {/* <TouchableOpacity
-          style={[styles.signBtn, gStyles.button]}
-          onPress={() => navigation.replace('SignUpScreen')}>
-          <Text style={styles.btnText}>Sign up a new account</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.btnForgot}
-          onPress={() => navigation.replace('LostPasswordScreen')}>
-          <Text style={styles.btnTextForgot}>Lost password</Text>
-        </TouchableOpacity> */}
       </View>
       {Boolean(validationModal) && (
         <Modal

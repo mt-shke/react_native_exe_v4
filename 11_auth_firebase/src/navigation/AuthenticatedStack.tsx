@@ -57,9 +57,11 @@ const AuthenticatedStack = ({user}: IUserProps) => {
             headerTitle: '',
           })}
         />
-        <Stack.Screen name="NewUserScreen" options={screenOptions}>
-          {props => <NewUserScreen {...props} />}
-        </Stack.Screen>
+        <Stack.Screen
+          name="NewUserScreen"
+          options={screenOptions}
+          component={NewUserScreen}
+        />
         <Stack.Screen name="GalleryScreen" options={screenOptions}>
           {props => <GalleryScreen {...props} />}
         </Stack.Screen>

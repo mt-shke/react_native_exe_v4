@@ -1,5 +1,6 @@
 import {yupResolver} from '@hookform/resolvers/yup';
 import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {useContext, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {
@@ -18,17 +19,22 @@ import {updateUserFirestore} from '../../firebase';
 import {fonts} from '../../globals';
 import {colors} from '../../globals/colors';
 import {gStyles} from '../../globals/globalStyles';
+import {TAuthenticatedStackParamsList} from '../../navigation/AuthenticatedStack';
 import {userProfileSchema} from '../../schema/yup';
 import {UserContext} from '../../state/UserContext';
-import {TNewUserScreenNavigationProp} from '../../ts/types/navigation';
+import {TNewUserScreenScreenProps} from '../../ts/types/navigation';
 
 interface IUserProfile {
   username: string;
   job: string;
 }
 
+type TNewUserScreenNavigationProp = NativeStackNavigationProp<
+  TAuthenticatedStackParamsList,
+  'NewUserScreen'
+>;
+
 const NewUserForm = () => {
-  const navigation = useNavigation<TNewUserScreenNavigationProp>();
   const {
     control,
     watch,
@@ -40,6 +46,8 @@ const NewUserForm = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const {state, dispatch} = useContext(UserContext);
+
+  const navigation = useNavigation<TNewUserScreenNavigationProp>();
 
   const submit = async (data: IUserProfile) => {
     try {
