@@ -9,6 +9,7 @@ import storage from '@react-native-firebase/storage';
 export const retrieveLocalImg = async () => {
   try {
     const result = await launchImageLibrary(options);
+
     if (!result.assets) {
       throw new Error('No file found');
     }
@@ -119,7 +120,7 @@ let options: ImageLibraryOptions = {
   // saveToPhotos: true,
 };
 
-export const deleteStorageImage = async (userUid, fileName) => {
+export const deleteStorageImage = async (userUid: string, fileName: string) => {
   try {
     const ref = storage().ref(`/assets/users/${userUid}/` + fileName);
     await ref.delete();

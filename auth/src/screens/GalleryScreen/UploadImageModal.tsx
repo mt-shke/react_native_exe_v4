@@ -81,11 +81,8 @@ const UploadImageModal = ({
         description: data.description ?? '',
         fileName: localImg.fileName,
       };
-      console.log('In before adding fireStoreGallery');
 
       await addFirestoreGalleryUserImage(userUid, newImg);
-
-      console.log('In after adding fireStoreGallery');
       addNewImgToGallery(newImg);
       setUploadImageModal(false);
       setIsFetching(false);

@@ -8,11 +8,7 @@ import {
   ImageBackground,
   FlatList,
 } from 'react-native';
-import {
-  deleteStorageImage,
-  getUserStorageData,
-  openCamera,
-} from '../../firebase/storage/images';
+import {deleteStorageImage, openCamera} from '../../firebase/storage/images';
 import {colors, fonts, screenWidth} from '../../globals';
 import {gStyles} from '../../globals/globalStyles';
 import {UserContext} from '../../state/UserContext';
@@ -30,7 +26,6 @@ const GalleryScreen = (props: TGalleryScreenProps) => {
   const {navigation} = props;
   const {state} = useContext(UserContext);
   const [userGallery, setUserGallery] = useState<IGalleryImg[]>([]);
-  const [imgs, setImg] = useState<string[]>([]);
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [uploadImageModal, setUploadImageModal] = useState<boolean>(false);
   const [deleteModalIndex, setDeleteModalIndex] = useState<number | false>(
@@ -38,8 +33,7 @@ const GalleryScreen = (props: TGalleryScreenProps) => {
   );
 
   useEffect(() => {
-    if (!imgs.length) {
-      getPicture(state.user!.uid);
+    if (!userGallery.length) {
       getFirestoreUserGallery(state.user!.uid);
     }
   }, []);
@@ -49,50 +43,39 @@ const GalleryScreen = (props: TGalleryScreenProps) => {
     setUserGallery(gallery);
   };
 
-  const getPicture = async (userUid: string) => {
-    try {
-      if (isFetching) {
-        return;
-      }
-      const userData = await getUserStorageData(userUid);
-      if (!userData) {
-        throw new Error('Images not found');
-      }
-      let imgsArray: string[] = [];
-      for (let index = 0; index < userData.items.length; index++) {
-        const url = await userData.items[index].getDownloadURL();
-        imgsArray.push(url);
-      }
-      setImg(imgsArray);
-      setIsFetching(false);
-      return;
-    } catch (error) {
-      console.log('getPicture Error is:' + error);
-      setIsFetching(false);
-      return;
-    }
-  };
-
   const addNewImgToGallery = (img: IGalleryImg) => {
     setUserGallery(previous => [...previous, img]);
   };
 
   const deleteGalleryImg = async (item: IGalleryImg) => {
     try {
+      if (isFetching) {
+        return;
+      }
+      setIsFetching(true);
       await deleteFirestoreGalleryImg(state.user!.uid, item);
       const updatedGallery = userGallery.filter(
         (galleryImg: IGalleryImg) => galleryImg !== item,
       );
-      await deleteStorageImage(state.user?.uid, item.fileName);
+      await deleteStorageImage(state.user?.uid as string, item.fileName);
       setUserGallery(updatedGallery ?? []);
       setDeleteModalIndex(false);
+      setIsFetching(false);
+
       return;
     } catch (error) {
       console.log('deleteGalleryImg error: ' + error);
       setDeleteModalIndex(false);
+      setIsFetching(false);
       return;
     }
   };
+
+  console.log('GalleryLength is: ' + userGallery.length);
+
+  // const useGallImg = userGallery.map(item => item.imgUrl);
+  // const missingOne = imgs.filter(img => !useGallImg.includes(img));
+  // console.log('missingOne is: ' + missingOne);
 
   const btnSubmitStyle = {
     ...styles.btnSubmit,
@@ -114,13 +97,13 @@ const GalleryScreen = (props: TGalleryScreenProps) => {
           <TouchableOpacity
             style={btnSubmitStyle}
             onPress={() => setUploadImageModal(true)}>
-            <Text style={styles.btnText}>Upload image</Text>
+            <Ionicons name="cloud-upload-sharp" size={20} />
           </TouchableOpacity>
           <TouchableOpacity
             disabled={isFetching ? true : false}
             style={[styles.btnCamera, gStyles.button]}
             onPress={() => openCamera()}>
-            <Text style={styles.btnText}>Open camera</Text>
+            <Ionicons name="camera" size={20} />
           </TouchableOpacity>
         </View>
         {!!uploadImageModal && (
@@ -142,9 +125,11 @@ const GalleryScreen = (props: TGalleryScreenProps) => {
   return (
     <View style={styles.bg}>
       <FlatList
+        style={styles.flatList}
         initialNumToRender={12}
         numColumns={4}
         data={userGallery}
+        scrollEnabled={true}
         ListHeaderComponent={
           <View style={styles.header}>
             <TouchableOpacity
@@ -175,14 +160,11 @@ const GalleryScreen = (props: TGalleryScreenProps) => {
               // eslint-disable-next-line react-native/no-inline-styles
               style={{
                 ...styles.containerGalleryImg,
-                // width: [4, 5, 6, 7].includes(index)
-                //   ? '25%'
-                //   : index !== 3
-                //   ? '33%'
-                //   : '50%',
-                // width: '20%',
-                margin: 1,
-                aspectRatio: 1 / 1,
+                // width: [4, 10].includes(index)
+                //   ? '50%'
+                //   : // : index !== 3
+                //     // ? '33%'
+                //     '25%',
               }}
               key={index}>
               <ImageBackground
@@ -190,6 +172,7 @@ const GalleryScreen = (props: TGalleryScreenProps) => {
                 resizeMode="cover"
                 style={styles.galleryImg}
               />
+
               <Text style={styles.textTitle}>{item.title}</Text>
               <TouchableOpacity
                 style={styles.deleteIcon}
@@ -223,30 +206,12 @@ const GalleryScreen = (props: TGalleryScreenProps) => {
             )}
           </>
         )}
+        ListFooterComponent={
+          <View style={styles.footer}>
+            <Text>This is the footer</Text>
+          </View>
+        }
       />
-
-      {!!uploadImageModal && (
-        <UploadImageModal
-          addNewImgToGallery={addNewImgToGallery}
-          setUploadImageModal={setUploadImageModal}
-        />
-      )}
-      {!!uploadImageModal && (
-        <UploadImageModal
-          addNewImgToGallery={addNewImgToGallery}
-          setUploadImageModal={setUploadImageModal}
-        />
-      )}
-      {!!uploadImageModal ||
-        (!!deleteModalIndex && (
-          <Pressable
-            style={styles.overlay}
-            onPress={() => {
-              setUploadImageModal(false);
-              setDeleteModalIndex(false);
-            }}
-          />
-        ))}
     </View>
   );
 };
@@ -257,30 +222,23 @@ const styles = StyleSheet.create({
   bg: {
     flex: 1,
     position: 'relative',
+    flexGrow: 1,
+    backgroundColor: colors.black,
   },
   container: {
+    flex: 1,
     position: 'relative',
-  },
-  flatList: {
-    flexWrap: 'wrap',
-    maxWidth: screenWidth,
-    flexDirection: 'row',
-    backgroundColor: 'purple',
-  },
-  containerContent: {
-    width: screenWidth,
-    height: '100%',
-    display: 'flex',
-    alignItems: 'center',
+    flexGrow: 1,
   },
 
-  overlay: {
-    position: 'absolute',
-    height: '100%',
-    width: '100%',
-    zIndex: 2,
-    opacity: 0.5,
-    backgroundColor: colors.black,
+  // FlatList Style
+  flatList: {
+    flex: 1,
+    maxWidth: screenWidth,
+    flexGrow: 1,
+    // flexWrap: 'wrap',
+    // flexDirection: 'row',
+    // backgroundColor: 'purple',
   },
   header: {
     // backgroundColor: 'red',
@@ -290,9 +248,97 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
   },
+  footer: {
+    backgroundColor: 'red',
+    width: screenWidth,
+    height: 200,
+    marginBottom: 20,
+  },
+  containerContent: {
+    width: screenWidth,
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    // backgroundColor: 'green',
+    paddingBottom: 100,
+    flexGrow: 1,
+  },
+  colWrapper: {
+    width: screenWidth,
+    // backgroundColor: 'blue',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    // marginTop: 300,
+  },
+
+  // Image
+  containerGalleryImg: {
+    position: 'relative',
+    borderColor: colors.darkBlue,
+    alignSelf: 'flex-start',
+    width: screenWidth / 4,
+    aspectRatio: 1 / 1,
+  },
+  galleryImg: {
+    width: '100%',
+    height: '100%',
+  },
+  textTitle: {
+    position: 'absolute',
+    width: '100%',
+    whitespace: 'nowrap',
+    bottom: 4,
+    left: 4,
+    color: colors.whiteBlue,
+  },
+  text: {
+    marginTop: 10,
+  },
+
+  // Modal Delete
+  modalView: {
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    alignSelf: 'flex-start',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  containerDeleteModal: {
+    position: 'absolute',
+    alignSelf: 'center',
+    width: 160,
+    backgroundColor: colors.blue,
+    borderRadius: 6,
+    padding: 10,
+    display: 'flex',
+    alignItems: 'center',
+  },
+  containerDeleteIcons: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  deleteModalIcon: {
+    alignSelf: 'center',
+    padding: 10,
+  },
+
+  // Modal
+  overlay: {
+    position: 'absolute',
+    height: '100%',
+    width: '100%',
+    zIndex: 2,
+    opacity: 0.5,
+    backgroundColor: colors.black,
+  },
+
+  // Button Style & Icon
   btnSettings: {
     position: 'absolute',
-    backgroundColor: 'orange',
+    backgroundColor: colors.orange,
     paddingVertical: 8,
     paddingHorizontal: 14,
     borderRadius: 8,
@@ -316,77 +362,11 @@ const styles = StyleSheet.create({
     marginTop: 60,
     marginHorizontal: 10,
   },
-  containerImg: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-  },
-  img: {
-    width: 200,
-    height: 200,
-    alignSelf: 'center',
-    margin: 50,
-  },
   deleteIcon: {
     position: 'absolute',
     zIndex: 2,
     right: 10,
     top: 10,
-  },
-  colWrapper: {
-    width: screenWidth,
-    // backgroundColor: 'blue',
-    // position: 'relative',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  containerGalleryImg: {
-    position: 'relative',
-    borderColor: colors.darkBlue,
-    display: 'flex',
-    alignSelf: 'center',
-    width: '33%',
-  },
-  galleryImg: {
-    width: '100%',
-    height: '100%',
-  },
-  textTitle: {
-    position: 'absolute',
-    bottom: 4,
-    left: 4,
-  },
-  text: {
-    marginTop: 10,
-  },
-  modalView: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 10,
-  },
-  containerDeleteModal: {
-    position: 'absolute',
-    alignSelf: 'center',
-    width: 160,
-    backgroundColor: colors.blue,
-    borderRadius: 6,
-    padding: 10,
-    display: 'flex',
-    alignItems: 'center',
-  },
-  containerDeleteIcons: {
-    display: 'flex',
-    flexDirection: 'row',
-  },
-  deleteModalIcon: {
-    alignSelf: 'center',
-    padding: 10,
   },
 });
 
@@ -516,3 +496,51 @@ const styles = StyleSheet.create({
 // //   </View>
 // // }
 // />
+
+// prolly useless
+
+// const getPicture = async (userUid: string) => {
+//   try {
+//     if (isFetching) {
+//       return;
+//     }
+//     const userData = await getUserStorageData(userUid);
+//     if (!userData) {
+//       throw new Error('Images not found');
+//     }
+//     let imgsArray: string[] = [];
+//     for (let index = 0; index < userData.items.length; index++) {
+//       const url = await userData.items[index].getDownloadURL();
+//       imgsArray.push(url);
+//     }
+//     setImg(imgsArray);
+//     setIsFetching(false);
+//     return;
+//   } catch (error) {
+//     console.log('getPicture Error is:' + error);
+//     setIsFetching(false);
+//     return;
+//   }
+// };
+
+// {!!uploadImageModal && (
+//   <UploadImageModal
+//     addNewImgToGallery={addNewImgToGallery}
+//     setUploadImageModal={setUploadImageModal}
+//   />
+// )}
+// {!!uploadImageModal && (
+//   <UploadImageModal
+//     addNewImgToGallery={addNewImgToGallery}
+//     setUploadImageModal={setUploadImageModal}
+//   />
+// )}
+// {!!uploadImageModal && (
+//   <Pressable
+//     style={styles.overlay}
+//     onPress={() => {
+//       setUploadImageModal(false);
+//       // setDeleteModalIndex(false);
+//     }}
+//   />
+// )}
