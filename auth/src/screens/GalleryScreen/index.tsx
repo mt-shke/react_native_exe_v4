@@ -21,6 +21,7 @@ import {
 } from '../../firebase/imagesCollection';
 import {IGalleryImg} from '../../ts/interfaces';
 import TextStylised from '../../components/UI/TextStylised';
+import LinearGradient from 'react-native-linear-gradient';
 
 const GalleryScreen = (props: TGalleryScreenProps) => {
   const {navigation} = props;
@@ -70,12 +71,6 @@ const GalleryScreen = (props: TGalleryScreenProps) => {
       return;
     }
   };
-
-  console.log('GalleryLength is: ' + userGallery.length);
-
-  // const useGallImg = userGallery.map(item => item.imgUrl);
-  // const missingOne = imgs.filter(img => !useGallImg.includes(img));
-  // console.log('missingOne is: ' + missingOne);
 
   const btnSubmitStyle = {
     ...styles.btnSubmit,
@@ -130,6 +125,7 @@ const GalleryScreen = (props: TGalleryScreenProps) => {
         numColumns={4}
         data={userGallery}
         scrollEnabled={true}
+        keyExtractor={item => item.imgUrl}
         ListHeaderComponent={
           <View style={styles.header}>
             <TouchableOpacity
@@ -172,8 +168,15 @@ const GalleryScreen = (props: TGalleryScreenProps) => {
                 resizeMode="cover"
                 style={styles.galleryImg}
               />
-
-              <Text style={styles.textTitle}>{item.title}</Text>
+              <LinearGradient
+                start={{x: 0.2, y: 0}}
+                end={{x: 1, y: 0}}
+                colors={[colors.black, 'transparent']}
+                style={styles.gradient}>
+                <Text numberOfLines={1} style={styles.textTitle}>
+                  {item.title}
+                </Text>
+              </LinearGradient>
               <TouchableOpacity
                 style={styles.deleteIcon}
                 onPress={() => setDeleteModalIndex(index)}>
@@ -253,10 +256,10 @@ const styles = StyleSheet.create({
     width: screenWidth,
     height: 200,
     marginBottom: 20,
+    marginTop: 100,
   },
   containerContent: {
     width: screenWidth,
-    height: '100%',
     display: 'flex',
     alignItems: 'center',
     // backgroundColor: 'green',
@@ -285,12 +288,15 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   textTitle: {
+    color: colors.whiteBlue,
+    marginLeft: 4,
+  },
+  gradient: {
     position: 'absolute',
     width: '100%',
-    whitespace: 'nowrap',
-    bottom: 4,
-    left: 4,
-    color: colors.whiteBlue,
+    overflow: 'hidden',
+    bottom: 0,
+    left: 0,
   },
   text: {
     marginTop: 10,

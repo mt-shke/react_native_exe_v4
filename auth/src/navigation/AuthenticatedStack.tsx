@@ -11,12 +11,14 @@ import SettingsDrawer from './SettingsDrawer';
 import {TouchableOpacity, StyleSheet} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import GalleryScreen from '../screens/GalleryScreen';
+import DetailedGalleryImageScreen from '../screens/DetailedGalleryImageScreen';
 
 export type TAuthenticatedStackParamsList = {
   HomeScreen: undefined;
   SettingsDrawer: undefined;
   NewUserScreen: undefined;
   GalleryScreen: undefined;
+  DetailedGalleryImageScreen: undefined;
 };
 
 const Stack = createNativeStackNavigator<TAuthenticatedStackParamsList>();
@@ -61,6 +63,11 @@ const AuthenticatedStack = ({user}: IUserProps) => {
           name="NewUserScreen"
           options={screenOptions}
           component={NewUserScreen}
+        />
+        <Stack.Screen
+          name="DetailedGalleryImageScreen"
+          options={screenOptions}
+          component={DetailedGalleryImageScreen}
         />
         <Stack.Screen name="GalleryScreen" options={screenOptions}>
           {props => <GalleryScreen {...props} />}
