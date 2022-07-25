@@ -181,6 +181,8 @@ const LoginForm: React.FC = () => {
     return <ActivityIndicator size={'large'} />;
   }
 
+  console.log('in form' + new Date(Date.now()));
+
   return (
     <>
       <View style={styles.container}>

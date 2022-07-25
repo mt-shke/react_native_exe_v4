@@ -13,7 +13,6 @@ import {UserContext} from '../../state/UserContext';
 import {THomeScreenProps} from '../../ts/types/navigation';
 
 const HomeScreen = (props: THomeScreenProps) => {
-  // todo find props screen type
   const {
     state: {user},
   } = useContext(UserContext);
