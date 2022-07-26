@@ -51,3 +51,14 @@ module.exports = {
 ```
 
 </details>
+
+<details>
+<summary>AvoidKeyboardPush</summary>
+
+AndroidManifest.xl
+
+```js
+android: windowSoftInputMode = 'adjustPan';
+```
+
+</details>

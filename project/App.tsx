@@ -1,14 +1,17 @@
 import React from 'react';
 import {StatusBar, StyleSheet, View} from 'react-native';
-import MainNavigation from './src/navigation/MainNavigation';
+import Navigation from './src/navigation/Navigation';
+import UserProvider from './src/state/UserContext';
 // import 'react-native-gesture-handler';
 
 const App = () => {
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle={'light-content'} />
-      <MainNavigation />
-    </View>
+    <UserProvider>
+      <View style={styles.container}>
+        <StatusBar barStyle={'light-content'} hidden />
+        <Navigation />
+      </View>
+    </UserProvider>
   );
 };
 

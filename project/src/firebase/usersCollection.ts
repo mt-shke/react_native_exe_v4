@@ -7,8 +7,6 @@ export const setUserToFirestore = async (userUid: string, email: string) => {
       .doc(userUid)
       .set({
         email: email,
-        uid: userUid,
-        newUser: true,
         firstname: '',
         lastname: '',
         profilPicture: '',
@@ -18,29 +16,6 @@ export const setUserToFirestore = async (userUid: string, email: string) => {
     return newUserInFirestore;
   } catch (error) {
     console.log('in Error firestore');
-    return null;
-  }
-};
-
-export const setUserFirestoreCredentials = async (
-  userUid: string,
-  email: string,
-) => {
-  try {
-    const newUserInFirestore = await firestore()
-      .collection('Users')
-      .doc(userUid)
-      .collection('credentials')
-      .add({
-        email: email,
-        // todo use keychain to crypt
-        password: '',
-        name: 'Auth_Firebase',
-        type: 'app',
-      });
-    return newUserInFirestore;
-  } catch (error: any) {
-    console.log('setUserFirestoreCredentials error:' + error);
     return null;
   }
 };

@@ -1,8 +1,9 @@
+import {BlurView} from '@react-native-community/blur';
 import React, {useEffect, useState} from 'react';
 import {ControllerRenderProps} from 'react-hook-form';
 import {View, Text, StyleSheet, TextInput} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {gStyle} from '../globals';
+import {vStyle} from '../globals';
 import {colors} from '../globals/colors';
 import {fonts} from '../globals/fonts';
 // import LinearGradient from 'react-native-linear-gradient';
@@ -39,24 +40,24 @@ const CustomInput: React.FC<ICustomInput> = ({
       <View style={styles.containerLabel}>
         <Text style={styles.label}>{label}</Text>
         {!!error && (
-          <View>
-            {/* <LinearGradient
-              style={styles.overlay}
-              start={{x: 0.1, y: 0.1}}
-              end={{x: 0.1, y: 1}}
-              colors={[
-                'transparent',
-                colors.darkBlue,
-                colors.darkBlue,
-                'transparent',
-              ]}
-              locations={[0, 0.1, 0.5, 1]}
-            /> */}
+          <View style={styles.containerError}>
+            <BlurView
+              style={styles.blur}
+              blurType="light"
+              blurAmount={14}
+              reducedTransparencyFallbackColor="white"
+            />
             <Text style={styles.error}>{`${error}`}</Text>
           </View>
         )}
       </View>
       <View style={styles.containerInput}>
+        <BlurView
+          style={styles.blur}
+          blurType="light"
+          blurAmount={14}
+          reducedTransparencyFallbackColor="white"
+        />
         <TextInput
           secureTextEntry={!isValueVisible}
           style={styles.input}
@@ -65,6 +66,7 @@ const CustomInput: React.FC<ICustomInput> = ({
           value={value}
           keyboardType={keyboard ?? 'default'}
           placeholder={placeholder}
+          placeholderTextColor={colors.lightgrey}
         />
         {type === 'password' && (
           <Ionicons
@@ -96,13 +98,21 @@ const styles = StyleSheet.create({
     fontSize: 22,
   },
   containerInput: {
+    position: 'relative',
     marginTop: 10,
     marginBottom: 20,
-    borderRadius: gStyle.borderRadius,
+    borderRadius: vStyle.borderRadius,
     borderWidth: 0,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.whitesecondary,
+    overflow: 'hidden',
+  },
+  blur: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
   },
   input: {
     width: '90%',
@@ -110,8 +120,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     fontSize: 18,
     fontFamily: fonts.source,
-    borderRadius: gStyle.borderRadius,
-    color: colors.darkgrey,
+    borderRadius: vStyle.borderRadius,
+    color: colors.lightgrey,
   },
   overlay: {
     width: '100%',
@@ -119,8 +129,15 @@ const styles = StyleSheet.create({
     position: 'absolute',
     opacity: 0.3,
   },
+  containerError: {
+    position: 'relative',
+    display: 'flex',
+    overflow: 'hidden',
+    paddingHorizontal: 8,
+    borderRadius: vStyle.borderRadius,
+  },
   error: {
-    color: colors.red,
+    color: colors.whitesecondary,
     fontSize: 16,
     fontFamily: fonts.source,
     letterSpacing: 0.4,

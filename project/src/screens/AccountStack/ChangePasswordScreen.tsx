@@ -1,6 +1,11 @@
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 
+// type TChangePasswordScreen = NativeStackScreenProps<
+//   TAccountStackParamsList,
+//   'ChangePasswordScreen'
+// >;
+
 const ChangePasswordScreen = () => {
   return (
     <View style={styles.container}>

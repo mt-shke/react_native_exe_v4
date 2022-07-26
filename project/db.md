@@ -2,9 +2,6 @@ Main
 
 ```js
 // Users
-- Seller/Producter
-- Customer
-- Transporter
 // Profile
 - Firstname
 - Lastname
@@ -21,5 +18,6 @@ Main
 - Comment
 
 // Commands
-- Products
+- Products totalQt + price
+- Price
 ```
