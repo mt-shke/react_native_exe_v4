@@ -1,6 +1,7 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import AddProductScreen from '../screens/AddProductScreen';
 import MarketScreen from '../screens/MarketScreen/indext';
+import React from 'react';
 
 type TMarketStackParamsList = {
   MarketScreen: undefined;
@@ -18,5 +19,4 @@ const MarketStack = () => {
   );
 };
 
-
-export MarketStack;
+export default MarketStack;
