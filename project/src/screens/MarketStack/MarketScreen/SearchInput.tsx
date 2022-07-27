@@ -1,7 +1,7 @@
 import {BlurView} from '@react-native-community/blur';
 import React, {useState} from 'react';
 import {View, StyleSheet, TextInput} from 'react-native';
-import {colors, fonts, screenWidth, vStyle} from '../../globals';
+import {colors, fonts, screenWidth, vStyle} from '../../../globals';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const SearchInput = () => {

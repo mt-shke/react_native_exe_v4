@@ -62,3 +62,19 @@ android: windowSoftInputMode = 'adjustPan';
 ```
 
 </details>
+
+<details>
+<summary>Todo</summary>
+
+```js
+// AccounStack
+// set accountBg Style
+
+// img product func
+// product form + firebase func
+
+// HomeScreen
+// homeScreen style and card
+```
+
+</details>

@@ -12,11 +12,13 @@ import {UserContext} from '../../../state/UserContext';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {colors} from '../../../globals';
 import SettingsItem from './SettingsItem';
-import {CommonActions, useNavigation} from '@react-navigation/native';
+import {CompositeNavigationProp, useNavigation} from '@react-navigation/native';
+import {MaterialBottomTabNavigationProp} from '@react-navigation/material-bottom-tabs';
+import {TAuthenticatedStackParamsList} from '../../../navigation/AuthenticatedStack';
 
-type TAccountScreenNavigationProp = NativeStackNavigationProp<
-  TAccountStackParamsList,
-  'AccountScreen'
+type TAccountScreenNavigationProp = CompositeNavigationProp<
+  NativeStackNavigationProp<TAccountStackParamsList, 'AccountScreen'>,
+  MaterialBottomTabNavigationProp<TAuthenticatedStackParamsList, 'AccountStack'>
 >;
 
 const AccountScreen = () => {
@@ -43,7 +45,7 @@ const AccountScreen = () => {
               icon={
                 <Ionicons name={'md-server'} color={colors.black} size={24} />
               }
-              text="Mettre à jour les paramètres"
+              text="Modifier vos paramètres"
             />
           </TouchableOpacity>
 
@@ -97,10 +99,10 @@ const AccountScreen = () => {
                 size={24}
               />
             }
-            text="Vos commandes"
+            text="Vos commandes en détails"
           />
           <TouchableOpacity
-            onPress={() => navigation.replace('UpdateProfileScreen')}>
+            onPress={() => navigation.replace('DeleteAccountScreen')}>
             <SettingsItem
               icon={
                 <Ionicons
@@ -113,12 +115,6 @@ const AccountScreen = () => {
             />
           </TouchableOpacity>
         </View>
-
-        <TouchableOpacity
-          style={styles.btnLogout}
-          onPress={() => dispatch({type: 'LOGOUT_USER'})}>
-          <Text style={styles.text}>Logout out</Text>
-        </TouchableOpacity>
       </ScrollView>
     </View>
   );
@@ -130,6 +126,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     color: 'black',
+    backgroundColor: 'transparent',
   },
   btnLogout: {
     backgroundColor: 'green',

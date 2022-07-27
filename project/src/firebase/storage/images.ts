@@ -22,7 +22,7 @@ export const retrieveLocalImg = async () => {
 
 export const sendLocalImgToStorage = async (userUid: string, data: any) => {
   try {
-    const ref = storage().ref(`/assets/users/${userUid}/` + data.fileName);
+    const ref = storage().ref(`/users/${userUid}/` + data.fileName);
     const response = await ref.putFile(data.uri as string);
     if (!response) {
       throw new Error('Could not upload image to Storage');

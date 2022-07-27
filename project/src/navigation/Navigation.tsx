@@ -26,12 +26,12 @@ const Navigation = () => {
     }
 
     if (fetchedUser) {
-      // if (!fetchedUser.emailVerified) {
-      //   setTimeout(() => {
-      //     signOut();
-      //   }, 2000);
-      //   return;
-      // }
+      if (!fetchedUser.emailVerified) {
+        setTimeout(() => {
+          signOut();
+        }, 2000);
+        return;
+      }
 
       updateUserState(fetchedUser.uid);
       return;
@@ -67,6 +67,9 @@ const Navigation = () => {
           email: responseData!.email,
           firstname: responseData!.firstname,
           lastname: responseData!.lastname,
+          profilPicture: responseData!.profilPicture,
+          address: responseData!.address,
+          uid: auth().currentUser!.uid,
         },
       });
       return;
@@ -78,7 +81,6 @@ const Navigation = () => {
 
   if (initializing) {
     signOut();
-    auth().signInWithEmailAndPassword('michel.tcha@gmail.com', 'azeaze');
     return (
       <View style={styles.container}>
         <ActivityIndicator size={'large'} style={styles.spinner} />
@@ -98,13 +100,11 @@ export default Navigation;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    display: 'flex',
-    justifyContent: 'center',
   },
   bg: {
     flex: 1,
   },
   spinner: {
-    // alignSelf: 'center',
+    alignSelf: 'center',
   },
 });

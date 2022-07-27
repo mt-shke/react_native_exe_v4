@@ -1,11 +1,6 @@
 import React, {createContext, useReducer} from 'react';
+import {IUser} from '../ts/interfaces';
 // import {IUser} from '../ts/interfaces';
-
-interface IUser {
-  firstname: string;
-  lastname: string;
-  email: string;
-}
 
 export interface IUserState {
   user: IUser | null;
@@ -16,11 +11,7 @@ const initialState: IUserState = {user: null};
 export type TUserAction =
   | {
       type: 'UPDATE_USER';
-      payload: {
-        email: string;
-        firstname: string;
-        lastname: string;
-      };
+      payload: IUser;
     }
   | {type: 'LOGOUT_USER'};
 
@@ -35,10 +26,11 @@ export const UserContext = createContext<{
 const reducer = (state: typeof initialState, action: TUserAction) => {
   switch (action.type) {
     case 'UPDATE_USER':
-      const {firstname, lastname, email} = action.payload;
+      const {firstname, lastname, email, uid, profilPicture, address} =
+        action.payload;
 
       return {
-        user: {firstname, lastname, email},
+        user: {firstname, lastname, email, uid, profilPicture, address},
       };
     case 'LOGOUT_USER':
       return {user: null};

@@ -8,11 +8,18 @@ import auth from '@react-native-firebase/auth';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import {setUserToFirestore} from '../../../firebase';
 import CustomInput from '../../../components/CustomInput';
-import {colors, fonts, gStyle, screenWidth, vStyle} from '../../../globals';
-import {TRegisterScreenProps} from '.';
+import {
+  colors,
+  fonts,
+  gStyle,
+  screenHeight,
+  screenWidth,
+  vStyle,
+} from '../../../globals';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {TUnauthenticatedStackParamsList} from '../../../navigation/UnauthenticatedStack';
 import {BlurView} from '@react-native-community/blur';
+import Modal from '../../../components/UI/Modal';
 
 interface IRegisterForm {
   email: string;
@@ -44,7 +51,7 @@ const RegisterForm = () => {
     null,
   );
   const [isFetching, setIsFetching] = useState(false);
-  // const [validationModal, setValidationModal] = useState(false);
+  const [validationModal, setValidationModal] = useState(false);
 
   const onSubmit = async (data: IRegisterForm) => {
     try {
@@ -75,36 +82,26 @@ const RegisterForm = () => {
         );
       }
 
-      const promiseResponse = await Promise.all([
-        setUserToFirestore(createResponse.user.uid, data.email),
-        createResponse.user.sendEmailVerification(),
-      ]);
-      if (!promiseResponse) {
-        throw new Error(
-          'Setting user to firestore, or sending email verification failed',
-        );
-      }
-
-      // setValidationModal(true);
+      setValidationModal(true);
       return await setTimeout(() => {
-        // setValidationModal(false);
+        setValidationModal(false);
         navigation.replace('LoginScreen');
         setIsFetching(false);
       }, 5000);
     } catch (error: any) {
       if (error.code === 'auth/email-already-in-use') {
-        setEmailAsyncError('Email is already in use');
+        setEmailAsyncError('Email déjà utilisé');
         setIsFetching(false);
         return;
       }
       if (error.code === 'auth/user-not-found') {
-        setEmailAsyncError('Email is invalid');
+        setEmailAsyncError('Email invalide');
         setIsFetching(false);
         return;
       }
       emailAsyncError && setEmailAsyncError(null);
       if (error.code === 'auth/wrong-password') {
-        setPasswordAsyncError('Password is invalid');
+        setPasswordAsyncError('Mot de passe invalide');
         setIsFetching(false);
         return;
       }
@@ -132,91 +129,91 @@ const RegisterForm = () => {
   };
 
   return (
-    <>
-      <View style={styles.container}>
-        <View style={styles.containerForm}>
-          <Controller
-            control={control}
-            rules={{
-              maxLength: 100,
-            }}
-            name={'email'}
-            render={({field}) => (
-              <CustomInput
-                keyboard="email-address"
-                placeholder="Email"
-                field={field}
-                error={emailError}
-              />
-            )}
-          />
+    <View style={styles.container}>
+      <View style={styles.containerForm}>
+        <Controller
+          control={control}
+          rules={{
+            maxLength: 100,
+          }}
+          name={'email'}
+          render={({field}) => (
+            <CustomInput
+              keyboard="email-address"
+              placeholder="Email"
+              field={field}
+              error={emailError}
+            />
+          )}
+        />
 
-          <Controller
-            control={control}
-            rules={{
-              maxLength: 100,
-            }}
-            name={'password'}
-            render={({field}) => (
-              <CustomInput
-                placeholder="Password"
-                field={field}
-                type="password"
-                error={passwordError}
+        <Controller
+          control={control}
+          rules={{
+            maxLength: 100,
+          }}
+          name={'password'}
+          render={({field}) => (
+            <CustomInput
+              placeholder="Mot de passe"
+              field={field}
+              type="password"
+              error={passwordError}
+            />
+          )}
+        />
+        <Controller
+          control={control}
+          rules={{
+            required: true,
+          }}
+          name={'conditionsCheck'}
+          render={({field}) => (
+            <View style={styles.containerTerms}>
+              <BlurView
+                style={styles.blur}
+                blurType="light"
+                blurAmount={14}
+                reducedTransparencyFallbackColor="white"
               />
-            )}
-          />
-          <Controller
-            control={control}
-            rules={{
-              required: true,
-            }}
-            name={'conditionsCheck'}
-            render={({field}) => (
-              <View style={styles.containerTerms}>
-                <BlurView
-                  style={styles.blur}
-                  blurType="light"
-                  blurAmount={14}
-                  reducedTransparencyFallbackColor="white"
+              <Text>
+                <BouncyCheckbox
+                  size={18}
+                  fillColor={colors.red}
+                  unfillColor={colors.red}
+                  text="Accepter les CGU/CGV"
+                  textStyle={styles.textCheckbox}
+                  iconStyle={styles.checkbox}
+                  onPress={(isChecked: boolean) => field.onChange(isChecked)}
                 />
-                <Text>
-                  <BouncyCheckbox
-                    size={18}
-                    fillColor={colors.red}
-                    unfillColor={colors.red}
-                    text="Accepter les CGU/CGV"
-                    textStyle={styles.textCheckbox}
-                    iconStyle={styles.checkbox}
-                    onPress={(isChecked: boolean) => field.onChange(isChecked)}
-                  />
-                  {/* todo fix */}
+              </Text>
+
+              {!!errors.conditionsCheck?.message && (
+                <Text style={styles.textConditions}>
+                  {errors.conditionsCheck?.message}
                 </Text>
-
-                {!!errors.conditionsCheck?.message && (
-                  <Text style={styles.textConditions}>
-                    {errors.conditionsCheck?.message}
-                  </Text>
-                )}
-              </View>
-            )}
-          />
-        </View>
-
-        <TouchableOpacity
-          disabled={isFetching ? true : false}
-          style={btnSubmitStyle}
-          onPress={handleSubmit(onSubmit)}>
-          <Text style={gStyle.btnText}>Sign up</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          disabled={isFetching ? true : false}
-          style={gStyle.btnContainer}
-          onPress={() => navigation.replace('LoginScreen')}>
-          <Text style={gStyle.btnText}>Back to login screen</Text>
-        </TouchableOpacity>
+              )}
+            </View>
+          )}
+        />
       </View>
-    </>
+      {!!validationModal && (
+        <Modal text="Compte crée avec succès. Veuillez valider votre compte en cliquant sur lien reçu par email." />
+      )}
+
+      <TouchableOpacity
+        disabled={isFetching ? true : false}
+        style={btnSubmitStyle}
+        onPress={handleSubmit(onSubmit)}>
+        <Text style={gStyle.btnText}>Créer un compte</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        disabled={isFetching ? true : false}
+        style={gStyle.btnContainer}
+        onPress={() => navigation.replace('LoginScreen')}>
+        <Text style={gStyle.btnText}>Retour</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
@@ -226,6 +223,7 @@ const styles = StyleSheet.create({
   container: {
     width: screenWidth,
     alignSelf: 'center',
+    marginTop: 60,
   },
   containerForm: {
     alignSelf: 'center',

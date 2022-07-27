@@ -10,6 +10,7 @@ export const setUserToFirestore = async (userUid: string, email: string) => {
         firstname: '',
         lastname: '',
         profilPicture: '',
+        uid: userUid,
         address: {street: '', zipCode: '', state: ''},
       });
 

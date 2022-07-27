@@ -1,3 +1,7 @@
+export interface IEmail {
+  email: string;
+}
+
 export interface ICredentials {
   email: string;
   password: string;
@@ -16,5 +20,6 @@ export interface IUser {
   firstname: string;
   lastname: string;
   profilPicture: string;
+  uid: string;
   address: {street: string; zipCode: number; state: string};
 }

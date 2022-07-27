@@ -2,13 +2,16 @@ import React from 'react';
 import {StatusBar, StyleSheet, View} from 'react-native';
 import Navigation from './src/navigation/Navigation';
 import UserProvider from './src/state/UserContext';
-// import 'react-native-gesture-handler';
+import {MMKV} from 'react-native-mmkv';
+import 'react-native-gesture-handler';
+
+export const storage = new MMKV();
 
 const App = () => {
   return (
     <UserProvider>
       <View style={styles.container}>
-        <StatusBar barStyle={'light-content'} hidden />
+        <StatusBar hidden />
         <Navigation />
       </View>
     </UserProvider>

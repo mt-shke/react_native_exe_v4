@@ -6,10 +6,12 @@ import {
 } from '@react-navigation/native-stack';
 import LoginScreen from '../screens/UnauthenticatedStack/LoginScreen';
 import RegisterScreen from '../screens/UnauthenticatedStack/RegisterScreen';
+import LostPasswordScreen from '../screens/UnauthenticatedStack/LostPasswordScreen';
 
 export type TUnauthenticatedStackParamsList = {
   LoginScreen: undefined;
   RegisterScreen: undefined;
+  LostPasswordScreen: undefined;
 };
 
 const Stack = createNativeStackNavigator<TUnauthenticatedStackParamsList>();
@@ -25,6 +27,9 @@ const UnauthenticatedStack = ({user}: any) => {
         </Stack.Screen>
         <Stack.Screen name="RegisterScreen" options={screenOptions}>
           {props => <RegisterScreen {...props} />}
+        </Stack.Screen>
+        <Stack.Screen name="LostPasswordScreen" options={screenOptions}>
+          {props => <LostPasswordScreen {...props} />}
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>

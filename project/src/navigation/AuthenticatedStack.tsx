@@ -1,19 +1,19 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {NativeStackNavigationOptions} from '@react-navigation/native-stack';
-import {StyleSheet} from 'react-native';
+import {ImageBackground, StyleSheet} from 'react-native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {colors} from '../globals';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
-import MarketScreen from '../screens/MarketScreen/indext';
-import AccountScreen from '../screens/AccountStack/AccountScreen';
+import MarketStack from './MarketStack';
+import AccountStack from './AccountStack';
 
 export type TAuthenticatedStackParamsList = {
   HomeScreen: undefined;
-  MarketScreen: undefined;
-  AccountScreen: undefined;
+  MarketStack: undefined;
+  AccountStack: undefined;
 };
 
 const Tab = createMaterialBottomTabNavigator<TAuthenticatedStackParamsList>();
@@ -45,7 +45,8 @@ const AuthenticatedStack = ({user}: any) => {
           </Tab.Screen>
 
           <Tab.Screen
-            name="MarketScreen"
+            name="MarketStack"
+            component={MarketStack}
             options={{
               tabBarLabel: 'Marché',
               tabBarIcon: ({focused}) => (
@@ -55,12 +56,11 @@ const AuthenticatedStack = ({user}: any) => {
                   size={24}
                 />
               ),
-            }}>
-            {props => <MarketScreen {...props} />}
-          </Tab.Screen>
+            }}
+          />
 
           <Tab.Screen
-            name="AccountScreen"
+            name="AccountStack"
             options={{
               tabBarLabel: 'Compte',
               tabBarIcon: ({focused}) => (
@@ -71,7 +71,14 @@ const AuthenticatedStack = ({user}: any) => {
                 />
               ),
             }}>
-            {props => <AccountScreen {...props} />}
+            {() => (
+              <ImageBackground
+                source={require('../../assets/img/bg/black/bg-account.jpg')}
+                resizeMode="cover"
+                style={styles.bg}>
+                <AccountStack />
+              </ImageBackground>
+            )}
           </Tab.Screen>
         </Tab.Navigator>
       </SafeAreaProvider>
@@ -81,12 +88,14 @@ const AuthenticatedStack = ({user}: any) => {
 
 export default AuthenticatedStack;
 
-const screenOptions: NativeStackNavigationOptions = {
+export const screenOptions: NativeStackNavigationOptions = {
   headerShown: false,
 };
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    backgroundColor: colors.black,
+  },
   bottomBar: {
     // height: 200,
   },
@@ -95,5 +104,8 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 14,
     borderRadius: 8,
+  },
+  bg: {
+    flex: 1,
   },
 });

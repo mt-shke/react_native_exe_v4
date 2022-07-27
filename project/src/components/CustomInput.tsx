@@ -15,6 +15,8 @@ interface ICustomInput {
   placeholder?: string;
   error: string | undefined;
   field: ControllerRenderProps<any, any>;
+  line?: number;
+  color?: 'black';
 }
 
 const CustomInput: React.FC<ICustomInput> = ({
@@ -24,6 +26,8 @@ const CustomInput: React.FC<ICustomInput> = ({
   placeholder,
   error,
   field,
+  line,
+  color,
 }) => {
   const [isValueVisible, setIsValueVisible] = useState<boolean>(true);
 
@@ -34,6 +38,8 @@ const CustomInput: React.FC<ICustomInput> = ({
   }, []);
 
   const {onChange, onBlur, value} = field;
+
+  // let textStyle =
 
   return (
     <View style={styles.container}>
@@ -55,7 +61,7 @@ const CustomInput: React.FC<ICustomInput> = ({
         <BlurView
           style={styles.blur}
           blurType="light"
-          blurAmount={14}
+          blurAmount={1}
           reducedTransparencyFallbackColor="white"
         />
         <TextInput
@@ -67,6 +73,7 @@ const CustomInput: React.FC<ICustomInput> = ({
           keyboardType={keyboard ?? 'default'}
           placeholder={placeholder}
           placeholderTextColor={colors.lightgrey}
+          numberOfLines={line ?? 1}
         />
         {type === 'password' && (
           <Ionicons
