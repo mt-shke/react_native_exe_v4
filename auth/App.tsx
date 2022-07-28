@@ -4,8 +4,12 @@ import UserProvider from './src/state/UserContext';
 import 'react-native-gesture-handler';
 import {MMKV} from 'react-native-mmkv';
 import MainNavigation from './src/navigation/MainNavigation';
+import {enableLatestRenderer} from 'react-native-maps';
 
 export const storage = new MMKV();
+
+
+enableLatestRenderer();
 
 const App = () => {
   return (

@@ -26,6 +26,7 @@ const AccountStack = () => {
   const {dispatch} = useContext(UserContext);
 
   return (
+    
     <Stack.Navigator
       initialRouteName="AccountScreen"
       // screenOptions={screenOptions}

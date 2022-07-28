@@ -125,7 +125,6 @@ export default AccountScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    color: 'black',
     backgroundColor: 'transparent',
   },
   btnLogout: {

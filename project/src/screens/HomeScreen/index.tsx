@@ -5,6 +5,8 @@ import {View, Text, StyleSheet, ImageBackground} from 'react-native';
 import {colors} from '../../globals';
 import {TAuthenticatedStackParamsList} from '../../navigation/AuthenticatedStack';
 import {UserContext} from '../../state/UserContext';
+import MapView, {PROVIDER_GOOGLE} from 'react-native-maps'; // remove PROVIDER_GOOGLE import if not using Google Maps
+import Geolocation from '@react-native-community/geolocation';
 
 type THomeScreenProps = MaterialBottomTabScreenProps<
   TAuthenticatedStackParamsList,
@@ -12,14 +14,11 @@ type THomeScreenProps = MaterialBottomTabScreenProps<
 >;
 
 const HomeScreen = (props: THomeScreenProps) => {
-  // All the user content
-  // Products viewed
-  // Commands
-
-  // if no user discover topics
   const {navigation} = props;
   const {state, dispatch} = useContext(UserContext);
   // const navigation = useNavigation<THomeScreenProps>();
+
+  Geolocation.getCurrentPosition(info => console.log(info));
 
   const id = state.user?.firstname || state.user!.email;
 
@@ -29,26 +28,49 @@ const HomeScreen = (props: THomeScreenProps) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.containerWelcome}>
-        <Text>Welcome {id}</Text>
-        <ImageBackground
-          source={{
-            uri: imgUrl,
-          }}
-          resizeMode="cover"
-          style={styles.avatar}
-        />
-      </View>
+      <MapView
+        provider={PROVIDER_GOOGLE} // remove if not using Google Maps
+        style={styles.map}
+        region={{
+          latitude: 37.78825,
+          longitude: -122.4324,
+          latitudeDelta: 0.015,
+          longitudeDelta: 0.0121,
+        }}
+      />
     </View>
   );
+
+  // return (
+  //   <View style={styles.mainContainer}>
+  //     <View style={styles.containerWelcome}>
+  //       <Text>Welcome {id}</Text>
+  //       <ImageBackground
+  //         source={{
+  //           uri: imgUrl,
+  //         }}
+  //         resizeMode="cover"
+  //         style={styles.avatar}
+  //       />
+  //     </View>
+  //   </View>
+  // );
 };
 
 export default HomeScreen;
 
 const styles = StyleSheet.create({
-  container: {
+  mainContainer: {
     flex: 1,
-    backgroundColor: colors.darkgrey,
+  },
+  container: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    flex: 1,
+  },
+  map: {
+    ...StyleSheet.absoluteFillObject,
   },
   containerWelcome: {
     display: 'flex',
